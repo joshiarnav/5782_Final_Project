@@ -2,6 +2,7 @@
 
 ## INTRODUCTION
 -----------------------------------------------------------------------------------------------------
+IGNORE THIS README, THIS IS THE SUGGESTED TEMPLATE
 
 The ultimate goal of this project is to predict dog breeds from corresponding images of dogs.
 
