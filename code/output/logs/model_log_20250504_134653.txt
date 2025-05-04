@@ -256,3 +256,301 @@ Sample answer: 2 10e10 0 10e9 8 10e8 2 10e7 8 10e6 4 10e5 4 10e4 4 10e3 8 10e2 0
 
 Sample question: What is 5 10e9 2 10e8 3 10e7 0 10e6 2 10e5 7 10e4 0 10e3 7 10e2 0 10e1 9 10e0 plus 9 10e9 6 10e8 2 10e7 8 10e6 0 10e5 5 10e4 0 10e3 1 10e2 4 10e1 9 10e0?
 Sample answer: 1 10e10 4 10e9 8 10e8 5 10e7 8 10e6 3 10e5 2 10e4 0 10e3 8 10e2 5 10e1 8 10e0
+
+=== Validation Batch 0 ===
+
+Sample question: What is 2 10e7 7 10e6 5 10e5 5 10e4 3 10e3 9 10e2 5 10e1 5 10e0 plus 7 10e1 5 10e0?
+Sample correct answer: 2 10e7 7 10e6 5 10e5 5 10e4 4 10e3 0 10e2 3 10e1 0 10e0
+Sample predicted answer: 2 10e7 7 10e6 5 10e5 5 10e4 4 10e3 0 10e2 3 10e1 0 10e0
+Exact match: True
+
+=== Validation Batch 1 ===
+
+Sample question: What is 3 10e12 0 10e11 9 10e10 8 10e9 4 10e8 1 10e7 4 10e6 7 10e5 4 10e4 2 10e3 4 10e2 7 10e1 2 10e0 plus 4 10e8 4 10e7 5 10e6 1 10e5 8 10e4 3 10e3 2 10e2 4 10e1 7 10e0?
+Sample correct answer: 3 10e12 0 10e11 9 10e10 8 10e9 8 10e8 5 10e7 9 10e6 9 10e5 2 10e4 5 10e3 7 10e2 1 10e1 9 10e0
+Sample predicted answer: 3 10e12 0 10e11 9 10e10 8 10e9 8 10e8 5 10e7 9 10e6 9 10e5 2 10e4 5 10e3 7 10e2 1 10e1 9 10e0
+Exact match: True
+
+=== Validation Batch 2 ===
+
+Sample question: What is 6 10e12 9 10e11 0 10e10 7 10e9 1 10e8 9 10e7 8 10e6 6 10e5 8 10e4 4 10e3 3 10e2 5 10e1 4 10e0 plus 3 10e11 2 10e10 0 10e9 2 10e8 7 10e7 0 10e6 1 10e5 8 10e4 8 10e3 9 10e2 6 10e1 9 10e0?
+Sample correct answer: 7 10e12 2 10e11 2 10e10 7 10e9 4 10e8 6 10e7 8 10e6 8 10e5 7 10e4 3 10e3 3 10e2 2 10e1 3 10e0
+Sample predicted answer: 7 10e12 2 10e11 2 10e10 7 10e9 4 10e8 6 10e7 8 10e6 8 10e5 7 10e4 3 10e3 3 10e2 2 10e1 3 10e0
+Exact match: True
+
+=== Validation Batch 4 ===
+
+Sample question: What is 2 10e5 0 10e4 8 10e3 2 10e2 0 10e1 2 10e0 plus 3 10e10 9 10e9 7 10e8 1 10e7 1 10e6 4 10e5 7 10e4 5 10e3 7 10e2 6 10e1 7 10e0?
+Sample correct answer: 3 10e10 9 10e9 7 10e8 1 10e7 1 10e6 6 10e5 8 10e4 3 10e3 9 10e2 6 10e1 9 10e0
+Sample predicted answer: 3 10e10 9 10e9 7 10e8 1 10e7 1 10e6 6 10e5 8 10e4 3 10e3 9 10e2 6 10e1 9 10e0
+Exact match: True
+
+=== Validation Batch 8 ===
+
+Sample question: What is 9 10e5 7 10e4 8 10e3 0 10e2 5 10e1 5 10e0 plus 5 10e14 3 10e13 2 10e12 4 10e11 4 10e10 7 10e9 6 10e8 2 10e7 0 10e6 1 10e5 1 10e4 9 10e3 0 10e2 8 10e1 8 10e0?
+Sample correct answer: 5 10e14 3 10e13 2 10e12 4 10e11 4 10e10 7 10e9 6 10e8 2 10e7 1 10e6 0 10e5 9 10e4 7 10e3 1 10e2 4 10e1 3 10e0
+Sample predicted answer: 5 10e14 3 10e13 2 10e12 4 10e11 4 10e10 7 10e9 6 10e8 2 10e7 1 10e6 0 10e5 9 10e4 7 10e3 1 10e2 4 10e1 3 10e0
+Exact match: True
+
+=== Validation Batch 16 ===
+
+Sample question: What is 5 10e5 6 10e4 8 10e3 8 10e2 9 10e1 6 10e0 plus 4 10e12 2 10e11 6 10e10 8 10e9 6 10e8 7 10e7 8 10e6 6 10e5 4 10e4 3 10e3 2 10e2 7 10e1 2 10e0?
+Sample correct answer: 4 10e12 2 10e11 6 10e10 8 10e9 6 10e8 7 10e7 9 10e6 2 10e5 1 10e4 2 10e3 1 10e2 6 10e1 8 10e0
+Sample predicted answer: 4 10e12 2 10e11 6 10e10 8 10e9 6 10e8 7 10e7 9 10e6 2 10e5 1 10e4 2 10e3 1 10e2 6 10e1 8 10e0
+Exact match: True
+
+=== Validation Batch 32 ===
+
+Sample question: What is 6 10e8 8 10e7 3 10e6 2 10e5 8 10e4 2 10e3 8 10e2 4 10e1 5 10e0 plus 5 10e1 3 10e0?
+Sample correct answer: 6 10e8 8 10e7 3 10e6 2 10e5 8 10e4 2 10e3 8 10e2 9 10e1 8 10e0
+Sample predicted answer: 6 10e8 8 10e7 3 10e6 2 10e5 8 10e4 2 10e3 8 10e2 9 10e1 8 10e0
+Exact match: True
+
+=== Validation Batch 64 ===
+
+Sample question: What is 8 10e8 5 10e7 8 10e6 7 10e5 9 10e4 3 10e3 4 10e2 0 10e1 0 10e0 plus 6 10e13 2 10e12 9 10e11 5 10e10 0 10e9 0 10e8 1 10e7 2 10e6 7 10e5 3 10e4 0 10e3 7 10e2 2 10e1 9 10e0?
+Sample correct answer: 6 10e13 2 10e12 9 10e11 5 10e10 0 10e9 8 10e8 7 10e7 1 10e6 5 10e5 2 10e4 4 10e3 1 10e2 2 10e1 9 10e0
+Sample predicted answer: 6 10e13 2 10e12 9 10e11 5 10e10 0 10e9 8 10e8 7 10e7 1 10e6 5 10e5 2 10e4 4 10e3 1 10e2 2 10e1 9 10e0
+Exact match: True
+
+=== Validation Batch 128 ===
+
+Sample question: What is 8 10e1 7 10e0 plus 4 10e11 9 10e10 2 10e9 3 10e8 8 10e7 0 10e6 2 10e5 9 10e4 3 10e3 3 10e2 5 10e1 3 10e0?
+Sample correct answer: 4 10e11 9 10e10 2 10e9 3 10e8 8 10e7 0 10e6 2 10e5 9 10e4 3 10e3 4 10e2 4 10e1 0 10e0
+Sample predicted answer: 4 10e11 9 10e10 2 10e9 3 10e8 8 10e7 0 10e6 2 10e5 9 10e4 3 10e3 4 10e2 4 10e1 0 10e0
+Exact match: True
+
+=== Validation Batch 256 ===
+
+Sample question: What is 1 10e10 0 10e9 2 10e8 0 10e7 2 10e6 5 10e5 5 10e4 2 10e3 5 10e2 2 10e1 3 10e0 plus 3 10e14 8 10e13 1 10e12 5 10e11 9 10e10 0 10e9 5 10e8 1 10e7 9 10e6 7 10e5 4 10e4 4 10e3 5 10e2 6 10e1 2 10e0?
+Sample correct answer: 3 10e14 8 10e13 1 10e12 6 10e11 0 10e10 0 10e9 7 10e8 2 10e7 2 10e6 2 10e5 9 10e4 7 10e3 0 10e2 8 10e1 5 10e0
+Sample predicted answer: 3 10e14 8 10e13 1 10e12 6 10e11 0 10e10 0 10e9 7 10e8 2 10e7 2 10e6 2 10e5 9 10e4 7 10e3 0 10e2 8 10e1 5 10e0
+Exact match: True
+
+=== Validation Epoch End ===
+
+Validation Exact Match: 0.9875
+
+=== Training Batch 0 ===
+
+Sample question: What is 2 10e2 4 10e1 5 10e0 plus 4 10e12 2 10e11 0 10e10 2 10e9 5 10e8 1 10e7 2 10e6 8 10e5 2 10e4 3 10e3 5 10e2 8 10e1 8 10e0?
+Sample answer: 4 10e12 2 10e11 0 10e10 2 10e9 5 10e8 1 10e7 2 10e6 8 10e5 2 10e4 3 10e3 8 10e2 3 10e1 3 10e0
+
+=== Training Batch 1 ===
+
+Sample question: What is 8 10e13 0 10e12 9 10e11 8 10e10 2 10e9 8 10e8 2 10e7 6 10e6 5 10e5 3 10e4 2 10e3 7 10e2 7 10e1 3 10e0 plus 3 10e3 9 10e2 7 10e1 2 10e0?
+Sample answer: 8 10e13 0 10e12 9 10e11 8 10e10 2 10e9 8 10e8 2 10e7 6 10e6 5 10e5 3 10e4 6 10e3 7 10e2 4 10e1 5 10e0
+
+=== Training Batch 2 ===
+
+Sample question: What is 9 10e7 5 10e6 4 10e5 7 10e4 6 10e3 0 10e2 8 10e1 9 10e0 plus 2 10e9 4 10e8 2 10e7 6 10e6 7 10e5 6 10e4 7 10e3 8 10e2 5 10e1 9 10e0?
+Sample answer: 2 10e9 5 10e8 2 10e7 2 10e6 2 10e5 4 10e4 3 10e3 9 10e2 4 10e1 8 10e0
+
+=== Training Batch 4 ===
+
+Sample question: What is 8 10e2 1 10e1 1 10e0 plus 9 10e4 4 10e3 7 10e2 4 10e1 8 10e0?
+Sample answer: 9 10e4 5 10e3 5 10e2 5 10e1 9 10e0
+
+=== Training Batch 8 ===
+
+Sample question: What is 6 10e11 8 10e10 6 10e9 1 10e8 8 10e7 7 10e6 6 10e5 4 10e4 7 10e3 4 10e2 2 10e1 7 10e0 plus 7 10e14 6 10e13 3 10e12 5 10e11 0 10e10 2 10e9 1 10e8 6 10e7 7 10e6 2 10e5 1 10e4 8 10e3 9 10e2 3 10e1 9 10e0?
+Sample answer: 7 10e14 6 10e13 4 10e12 1 10e11 8 10e10 8 10e9 3 10e8 5 10e7 4 10e6 8 10e5 6 10e4 6 10e3 3 10e2 6 10e1 6 10e0
+
+=== Training Batch 16 ===
+
+Sample question: What is 1 10e8 6 10e7 2 10e6 3 10e5 4 10e4 5 10e3 5 10e2 3 10e1 6 10e0 plus 4 10e7 0 10e6 4 10e5 2 10e4 4 10e3 2 10e2 2 10e1 5 10e0?
+Sample answer: 2 10e8 0 10e7 2 10e6 7 10e5 6 10e4 9 10e3 7 10e2 6 10e1 1 10e0
+
+=== Training Batch 32 ===
+
+Sample question: What is 4 10e4 5 10e3 0 10e2 4 10e1 4 10e0 plus 9 10e3 8 10e2 7 10e1 3 10e0?
+Sample answer: 5 10e4 4 10e3 9 10e2 1 10e1 7 10e0
+
+=== Training Batch 64 ===
+
+Sample question: What is 6 10e4 6 10e3 5 10e2 3 10e1 4 10e0 plus 7 10e3 3 10e2 6 10e1 1 10e0?
+Sample answer: 7 10e4 3 10e3 8 10e2 9 10e1 5 10e0
+
+=== Training Batch 128 ===
+
+Sample question: What is 5 10e6 4 10e5 1 10e4 8 10e3 4 10e2 6 10e1 4 10e0 plus 5 10e1 7 10e0?
+Sample answer: 5 10e6 4 10e5 1 10e4 8 10e3 5 10e2 2 10e1 1 10e0
+
+=== Training Batch 256 ===
+
+Sample question: What is 1 10e13 9 10e12 1 10e11 0 10e10 6 10e9 8 10e8 3 10e7 2 10e6 1 10e5 6 10e4 4 10e3 2 10e2 9 10e1 2 10e0 plus 7 10e4 8 10e3 7 10e2 9 10e1 0 10e0?
+Sample answer: 1 10e13 9 10e12 1 10e11 0 10e10 6 10e9 8 10e8 3 10e7 2 10e6 2 10e5 4 10e4 3 10e3 0 10e2 8 10e1 2 10e0
+
+=== Training Batch 512 ===
+
+Sample question: What is 7 10e4 4 10e3 1 10e2 9 10e1 6 10e0 plus 8 10e6 3 10e5 1 10e4 7 10e3 3 10e2 7 10e1 6 10e0?
+Sample answer: 8 10e6 3 10e5 9 10e4 1 10e3 5 10e2 7 10e1 2 10e0
+
+=== Training Batch 1024 ===
+
+Sample question: What is 6 10e11 1 10e10 6 10e9 2 10e8 9 10e7 9 10e6 1 10e5 9 10e4 8 10e3 2 10e2 3 10e1 4 10e0 plus 4 10e10 6 10e9 7 10e8 7 10e7 2 10e6 2 10e5 9 10e4 7 10e3 4 10e2 3 10e1 7 10e0?
+Sample answer: 6 10e11 6 10e10 3 10e9 0 10e8 7 10e7 1 10e6 4 10e5 9 10e4 5 10e3 6 10e2 7 10e1 1 10e0
+
+=== Training Batch 2048 ===
+
+Sample question: What is 5 10e6 2 10e5 9 10e4 0 10e3 0 10e2 4 10e1 4 10e0 plus 6 10e7 6 10e6 3 10e5 0 10e4 5 10e3 9 10e2 4 10e1 0 10e0?
+Sample answer: 7 10e7 1 10e6 5 10e5 9 10e4 5 10e3 9 10e2 8 10e1 4 10e0
+
+=== Training Batch 4096 ===
+
+Sample question: What is 7 10e3 0 10e2 7 10e1 1 10e0 plus 1 10e14 5 10e13 8 10e12 6 10e11 3 10e10 8 10e9 3 10e8 0 10e7 6 10e6 0 10e5 1 10e4 5 10e3 1 10e2 7 10e1 0 10e0?
+Sample answer: 1 10e14 5 10e13 8 10e12 6 10e11 3 10e10 8 10e9 3 10e8 0 10e7 6 10e6 0 10e5 2 10e4 2 10e3 2 10e2 4 10e1 1 10e0
+
+=== Training Batch 8192 ===
+
+Sample question: What is 9 10e11 0 10e10 9 10e9 7 10e8 1 10e7 5 10e6 4 10e5 9 10e4 3 10e3 6 10e2 8 10e1 5 10e0 plus 6 10e14 0 10e13 8 10e12 8 10e11 3 10e10 1 10e9 8 10e8 4 10e7 8 10e6 4 10e5 2 10e4 1 10e3 6 10e2 8 10e1 7 10e0?
+Sample answer: 6 10e14 0 10e13 9 10e12 7 10e11 4 10e10 1 10e9 5 10e8 6 10e7 3 10e6 9 10e5 1 10e4 5 10e3 3 10e2 7 10e1 2 10e0
+
+=== Training Batch 16384 ===
+
+Sample question: What is 5 10e8 0 10e7 1 10e6 4 10e5 3 10e4 2 10e3 5 10e2 2 10e1 6 10e0 plus 1 10e6 5 10e5 0 10e4 2 10e3 3 10e2 9 10e1 7 10e0?
+Sample answer: 5 10e8 0 10e7 2 10e6 9 10e5 3 10e4 4 10e3 9 10e2 2 10e1 3 10e0
+
+=== Validation Batch 0 ===
+
+Sample question: What is 2 10e7 7 10e6 5 10e5 5 10e4 3 10e3 9 10e2 5 10e1 5 10e0 plus 7 10e1 5 10e0?
+Sample correct answer: 2 10e7 7 10e6 5 10e5 5 10e4 4 10e3 0 10e2 3 10e1 0 10e0
+Sample predicted answer: 2 10e7 7 10e6 5 10e5 5 10e4 4 10e3 0 10e2 3 10e1 0 10e0
+Exact match: True
+
+=== Validation Batch 1 ===
+
+Sample question: What is 3 10e12 0 10e11 9 10e10 8 10e9 4 10e8 1 10e7 4 10e6 7 10e5 4 10e4 2 10e3 4 10e2 7 10e1 2 10e0 plus 4 10e8 4 10e7 5 10e6 1 10e5 8 10e4 3 10e3 2 10e2 4 10e1 7 10e0?
+Sample correct answer: 3 10e12 0 10e11 9 10e10 8 10e9 8 10e8 5 10e7 9 10e6 9 10e5 2 10e4 5 10e3 7 10e2 1 10e1 9 10e0
+Sample predicted answer: 3 10e12 0 10e11 9 10e10 8 10e9 8 10e8 5 10e7 9 10e6 9 10e5 2 10e4 5 10e3 7 10e2 1 10e1 9 10e0
+Exact match: True
+
+=== Validation Batch 2 ===
+
+Sample question: What is 6 10e12 9 10e11 0 10e10 7 10e9 1 10e8 9 10e7 8 10e6 6 10e5 8 10e4 4 10e3 3 10e2 5 10e1 4 10e0 plus 3 10e11 2 10e10 0 10e9 2 10e8 7 10e7 0 10e6 1 10e5 8 10e4 8 10e3 9 10e2 6 10e1 9 10e0?
+Sample correct answer: 7 10e12 2 10e11 2 10e10 7 10e9 4 10e8 6 10e7 8 10e6 8 10e5 7 10e4 3 10e3 3 10e2 2 10e1 3 10e0
+Sample predicted answer: 7 10e12 2 10e11 2 10e10 7 10e9 4 10e8 6 10e7 8 10e6 8 10e5 7 10e4 3 10e3 3 10e2 2 10e1 3 10e0
+Exact match: True
+
+=== Validation Batch 4 ===
+
+Sample question: What is 2 10e5 0 10e4 8 10e3 2 10e2 0 10e1 2 10e0 plus 3 10e10 9 10e9 7 10e8 1 10e7 1 10e6 4 10e5 7 10e4 5 10e3 7 10e2 6 10e1 7 10e0?
+Sample correct answer: 3 10e10 9 10e9 7 10e8 1 10e7 1 10e6 6 10e5 8 10e4 3 10e3 9 10e2 6 10e1 9 10e0
+Sample predicted answer: 3 10e10 9 10e9 7 10e8 1 10e7 1 10e6 6 10e5 8 10e4 3 10e3 9 10e2 6 10e1 9 10e0
+Exact match: True
+
+=== Validation Batch 8 ===
+
+Sample question: What is 9 10e5 7 10e4 8 10e3 0 10e2 5 10e1 5 10e0 plus 5 10e14 3 10e13 2 10e12 4 10e11 4 10e10 7 10e9 6 10e8 2 10e7 0 10e6 1 10e5 1 10e4 9 10e3 0 10e2 8 10e1 8 10e0?
+Sample correct answer: 5 10e14 3 10e13 2 10e12 4 10e11 4 10e10 7 10e9 6 10e8 2 10e7 1 10e6 0 10e5 9 10e4 7 10e3 1 10e2 4 10e1 3 10e0
+Sample predicted answer: 5 10e14 3 10e13 2 10e12 4 10e11 4 10e10 7 10e9 6 10e8 2 10e7 1 10e6 0 10e5 9 10e4 7 10e3 1 10e2 4 10e1 3 10e0
+Exact match: True
+
+=== Validation Batch 16 ===
+
+Sample question: What is 5 10e5 6 10e4 8 10e3 8 10e2 9 10e1 6 10e0 plus 4 10e12 2 10e11 6 10e10 8 10e9 6 10e8 7 10e7 8 10e6 6 10e5 4 10e4 3 10e3 2 10e2 7 10e1 2 10e0?
+Sample correct answer: 4 10e12 2 10e11 6 10e10 8 10e9 6 10e8 7 10e7 9 10e6 2 10e5 1 10e4 2 10e3 1 10e2 6 10e1 8 10e0
+Sample predicted answer: 4 10e12 2 10e11 6 10e10 8 10e9 6 10e8 7 10e7 9 10e6 2 10e5 1 10e4 2 10e3 1 10e2 6 10e1 8 10e0
+Exact match: True
+
+=== Validation Batch 32 ===
+
+Sample question: What is 6 10e8 8 10e7 3 10e6 2 10e5 8 10e4 2 10e3 8 10e2 4 10e1 5 10e0 plus 5 10e1 3 10e0?
+Sample correct answer: 6 10e8 8 10e7 3 10e6 2 10e5 8 10e4 2 10e3 8 10e2 9 10e1 8 10e0
+Sample predicted answer: 6 10e8 8 10e7 3 10e6 2 10e5 8 10e4 2 10e3 8 10e2 9 10e1 8 10e0
+Exact match: True
+
+=== Validation Batch 64 ===
+
+Sample question: What is 8 10e8 5 10e7 8 10e6 7 10e5 9 10e4 3 10e3 4 10e2 0 10e1 0 10e0 plus 6 10e13 2 10e12 9 10e11 5 10e10 0 10e9 0 10e8 1 10e7 2 10e6 7 10e5 3 10e4 0 10e3 7 10e2 2 10e1 9 10e0?
+Sample correct answer: 6 10e13 2 10e12 9 10e11 5 10e10 0 10e9 8 10e8 7 10e7 1 10e6 5 10e5 2 10e4 4 10e3 1 10e2 2 10e1 9 10e0
+Sample predicted answer: 6 10e13 2 10e12 9 10e11 5 10e10 0 10e9 8 10e8 7 10e7 1 10e6 5 10e5 2 10e4 4 10e3 1 10e2 2 10e1 9 10e0
+Exact match: True
+
+=== Validation Batch 128 ===
+
+Sample question: What is 8 10e1 7 10e0 plus 4 10e11 9 10e10 2 10e9 3 10e8 8 10e7 0 10e6 2 10e5 9 10e4 3 10e3 3 10e2 5 10e1 3 10e0?
+Sample correct answer: 4 10e11 9 10e10 2 10e9 3 10e8 8 10e7 0 10e6 2 10e5 9 10e4 3 10e3 4 10e2 4 10e1 0 10e0
+Sample predicted answer: 4 10e11 9 10e10 2 10e9 3 10e8 8 10e7 0 10e6 2 10e5 9 10e4 3 10e3 4 10e2 4 10e1 0 10e0
+Exact match: True
+
+=== Validation Batch 256 ===
+
+Sample question: What is 1 10e10 0 10e9 2 10e8 0 10e7 2 10e6 5 10e5 5 10e4 2 10e3 5 10e2 2 10e1 3 10e0 plus 3 10e14 8 10e13 1 10e12 5 10e11 9 10e10 0 10e9 5 10e8 1 10e7 9 10e6 7 10e5 4 10e4 4 10e3 5 10e2 6 10e1 2 10e0?
+Sample correct answer: 3 10e14 8 10e13 1 10e12 6 10e11 0 10e10 0 10e9 7 10e8 2 10e7 2 10e6 2 10e5 9 10e4 7 10e3 0 10e2 8 10e1 5 10e0
+Sample predicted answer: 3 10e14 8 10e13 1 10e12 6 10e11 0 10e10 0 10e9 7 10e8 2 10e7 2 10e6 2 10e5 9 10e4 7 10e3 0 10e2 8 10e1 5 10e0
+Exact match: True
+
+=== Validation Epoch End ===
+
+Validation Exact Match: 0.9934
+
+=== Training Batch 0 ===
+
+Sample question: What is 8 10e3 9 10e2 5 10e1 0 10e0 plus 1 10e4 9 10e3 4 10e2 2 10e1 2 10e0?
+Sample answer: 2 10e4 8 10e3 3 10e2 7 10e1 2 10e0
+
+=== Training Batch 1 ===
+
+Sample question: What is 4 10e13 9 10e12 9 10e11 7 10e10 5 10e9 7 10e8 6 10e7 4 10e6 5 10e5 1 10e4 2 10e3 6 10e2 6 10e1 4 10e0 plus 6 10e14 1 10e13 5 10e12 4 10e11 6 10e10 5 10e9 9 10e8 4 10e7 3 10e6 4 10e5 0 10e4 9 10e3 6 10e2 9 10e1 1 10e0?
+Sample answer: 6 10e14 6 10e13 5 10e12 4 10e11 4 10e10 1 10e9 7 10e8 0 10e7 7 10e6 9 10e5 2 10e4 2 10e3 3 10e2 5 10e1 5 10e0
+
+=== Training Batch 2 ===
+
+Sample question: What is 8 10e12 5 10e11 0 10e10 3 10e9 6 10e8 6 10e7 6 10e6 2 10e5 3 10e4 4 10e3 3 10e2 2 10e1 3 10e0 plus 6 10e4 9 10e3 8 10e2 2 10e1 2 10e0?
+Sample answer: 8 10e12 5 10e11 0 10e10 3 10e9 6 10e8 6 10e7 6 10e6 3 10e5 0 10e4 4 10e3 1 10e2 4 10e1 5 10e0
+
+=== Training Batch 4 ===
+
+Sample question: What is 7 10e2 7 10e1 2 10e0 plus 7 10e1 5 10e0?
+Sample answer: 8 10e2 4 10e1 7 10e0
+
+=== Training Batch 8 ===
+
+Sample question: What is 2 10e9 0 10e8 4 10e7 3 10e6 7 10e5 9 10e4 7 10e3 4 10e2 7 10e1 4 10e0 plus 6 10e10 2 10e9 4 10e8 5 10e7 2 10e6 7 10e5 6 10e4 6 10e3 9 10e2 4 10e1 1 10e0?
+Sample answer: 6 10e10 4 10e9 4 10e8 9 10e7 6 10e6 5 10e5 6 10e4 4 10e3 4 10e2 1 10e1 5 10e0
+
+=== Training Batch 16 ===
+
+Sample question: What is 4 10e3 0 10e2 2 10e1 3 10e0 plus 5 10e14 6 10e13 8 10e12 8 10e11 9 10e10 1 10e9 1 10e8 9 10e7 3 10e6 5 10e5 4 10e4 5 10e3 2 10e2 9 10e1 1 10e0?
+Sample answer: 5 10e14 6 10e13 8 10e12 8 10e11 9 10e10 1 10e9 1 10e8 9 10e7 3 10e6 5 10e5 4 10e4 9 10e3 3 10e2 1 10e1 4 10e0
+
+=== Training Batch 32 ===
+
+Sample question: What is 8 10e14 6 10e13 2 10e12 9 10e11 8 10e10 3 10e9 2 10e8 5 10e7 3 10e6 2 10e5 6 10e4 7 10e3 4 10e2 7 10e1 5 10e0 plus 9 10e5 2 10e4 8 10e3 5 10e2 9 10e1 0 10e0?
+Sample answer: 8 10e14 6 10e13 2 10e12 9 10e11 8 10e10 3 10e9 2 10e8 5 10e7 4 10e6 1 10e5 9 10e4 6 10e3 0 10e2 6 10e1 5 10e0
+
+=== Training Batch 64 ===
+
+Sample question: What is 5 10e11 5 10e10 7 10e9 5 10e8 3 10e7 9 10e6 4 10e5 1 10e4 1 10e3 0 10e2 5 10e1 1 10e0 plus 5 10e13 3 10e12 8 10e11 0 10e10 5 10e9 7 10e8 5 10e7 3 10e6 7 10e5 6 10e4 3 10e3 2 10e2 8 10e1 8 10e0?
+Sample answer: 5 10e13 4 10e12 3 10e11 6 10e10 3 10e9 2 10e8 9 10e7 3 10e6 1 10e5 7 10e4 4 10e3 3 10e2 3 10e1 9 10e0
+
+=== Training Batch 128 ===
+
+Sample question: What is 7 10e7 3 10e6 3 10e5 8 10e4 1 10e3 9 10e2 6 10e1 3 10e0 plus 8 10e11 6 10e10 2 10e9 6 10e8 1 10e7 4 10e6 3 10e5 3 10e4 1 10e3 7 10e2 9 10e1 0 10e0?
+Sample answer: 8 10e11 6 10e10 2 10e9 6 10e8 8 10e7 7 10e6 7 10e5 1 10e4 3 10e3 7 10e2 5 10e1 3 10e0
+
+=== Training Batch 256 ===
+
+Sample question: What is 3 10e14 8 10e13 8 10e12 6 10e11 8 10e10 0 10e9 9 10e8 9 10e7 7 10e6 9 10e5 0 10e4 9 10e3 5 10e2 4 10e1 7 10e0 plus 8 10e2 5 10e1 3 10e0?
+Sample answer: 3 10e14 8 10e13 8 10e12 6 10e11 8 10e10 0 10e9 9 10e8 9 10e7 7 10e6 9 10e5 1 10e4 0 10e3 4 10e2 0 10e1 0 10e0
+
+=== Training Batch 512 ===
+
+Sample question: What is 1 10e8 6 10e7 4 10e6 0 10e5 9 10e4 0 10e3 8 10e2 2 10e1 5 10e0 plus 2 10e13 1 10e12 1 10e11 3 10e10 6 10e9 8 10e8 8 10e7 2 10e6 5 10e5 6 10e4 1 10e3 6 10e2 3 10e1 6 10e0?
+Sample answer: 2 10e13 1 10e12 1 10e11 3 10e10 7 10e9 0 10e8 4 10e7 6 10e6 6 10e5 5 10e4 2 10e3 4 10e2 6 10e1 1 10e0
+
+=== Training Batch 1024 ===
+
+Sample question: What is 8 10e6 0 10e5 6 10e4 9 10e3 2 10e2 7 10e1 5 10e0 plus 6 10e13 3 10e12 9 10e11 3 10e10 7 10e9 5 10e8 0 10e7 0 10e6 0 10e5 3 10e4 0 10e3 1 10e2 2 10e1 9 10e0?
+Sample answer: 6 10e13 3 10e12 9 10e11 3 10e10 7 10e9 5 10e8 0 10e7 8 10e6 0 10e5 9 10e4 9 10e3 4 10e2 0 10e1 4 10e0
+
+=== Training Batch 2048 ===
+
+Sample question: What is 1 10e3 3 10e2 5 10e1 3 10e0 plus 4 10e12 9 10e11 9 10e10 2 10e9 2 10e8 5 10e7 0 10e6 6 10e5 9 10e4 7 10e3 6 10e2 8 10e1 2 10e0?
+Sample answer: 4 10e12 9 10e11 9 10e10 2 10e9 2 10e8 5 10e7 0 10e6 6 10e5 9 10e4 9 10e3 0 10e2 3 10e1 5 10e0
+
+=== Training Batch 4096 ===
+
+Sample question: What is 2 10e13 5 10e12 1 10e11 6 10e10 8 10e9 4 10e8 0 10e7 9 10e6 0 10e5 0 10e4 1 10e3 4 10e2 7 10e1 1 10e0 plus 5 10e6 3 10e5 9 10e4 1 10e3 1 10e2 6 10e1 0 10e0?
+Sample answer: 2 10e13 5 10e12 1 10e11 6 10e10 8 10e9 4 10e8 1 10e7 4 10e6 3 10e5 9 10e4 2 10e3 6 10e2 3 10e1 1 10e0
