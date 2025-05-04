@@ -1,0 +1,8 @@
+torch
+pytorch-lightning
+transformers
+num2words
+numpy
+pandas
+matplotlib
+tqdm
