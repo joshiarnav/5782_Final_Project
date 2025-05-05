@@ -40,8 +40,9 @@ DIGIT_LENGTHS = [2, 5, 10, 15, 20, 25, 30]
 
 # # Random seeds for each run
 # SEEDS = [42, 123, 456, 789, 101]
+SEEDS = [42]
 # Default seed
-DEFAULT_SEED = 42
+# DEFAULT_SEED = 42
 
 # Default parameters matching the paper
 DEFAULT_PARAMS = {
@@ -197,7 +198,7 @@ def plot_results(results, output_dir):
     # Show the plot
     plt.show()
 
-def run_experiments(output_dir, orthographies=None, digit_lengths=None, params=None, resume=True, seed=DEFAULT_SEED):
+def run_experiments(output_dir, orthographies=None, digit_lengths=None, params=None, resume=True, seed=SEEDS[0]):
     """Run all experiments and generate plots."""
     # Set default values
     if orthographies is None:
@@ -279,7 +280,7 @@ def main():
                         help='Run validation every N epochs')
     parser.add_argument('--plot_only', action='store_true',
                         help='Only plot existing results without running experiments')
-    parser.add_argument('--seed', type=int, default=DEFAULT_SEED,
+    parser.add_argument('--seed', type=int, default=SEEDS[0],
                         help='Random seed for the experiment')
     
     args = parser.parse_args()
