@@ -165,15 +165,14 @@ def run_from_colab(train_size=1000, val_size=200, test_size=200,
                   max_digits_train=5, max_digits_test=5,
                   batch_size=32, max_epochs=5):
     """Helper function to run from a Colab notebook with custom parameters."""
-    # Create a simple namespace object to hold args
-    class Args:
-        pass
+    # Create a proper argparse.Namespace object for PyTorch Lightning compatibility
+    import argparse
+    import os
     
-    args = Args()
+    args = argparse.Namespace()
     
     # Set all required parameters
     # Use absolute path for output directory in Colab
-    import os
     args.output_dir = os.path.abspath('./output')
     args.model_name_or_path = 't5-base'
     args.operation = 'addition'
