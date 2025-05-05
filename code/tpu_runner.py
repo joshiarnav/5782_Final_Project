@@ -177,6 +177,8 @@ def run_from_colab(train_size=1000, val_size=200, test_size=200,
     args.balance_train = True
     args.balance_val = True
     args.balance_test = False
+    args.invert_question = False
+    args.invert_answer = False
     args.min_digits_train = 2
     args.min_digits_test = 2
     args.max_digits_train = max_digits_train
