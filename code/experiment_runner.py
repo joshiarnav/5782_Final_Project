@@ -59,7 +59,7 @@ DEFAULT_PARAMS = {
     'max_seq_length': 512,
     'num_workers': 8,                 # Increased from 4
     'max_epochs': 100,                # 100 epochs as in the paper
-    'check_val_every_n_epoch': 5,
+    'check_val_every_n_epoch': 10,
     'precision': 32,
     'gradient_clip_val': 1.0,
     'accumulate_grad_batches': 4,

@@ -64,29 +64,30 @@ class ArithmeticDataset(Dataset):
         self.examples = self._generate_examples(n_examples, min_digits, max_digits, balanced)
 
     def _generate_examples(self, n_examples: int, min_digits: int, max_digits: int, balanced: bool) -> List[Tuple[int, int]]:
-        """Generate number pairs for arithmetic operations."""
-        examples = []
+        """Generate number pairs for arithmetic operations.
         
+        This implementation matches the original paper's code in test.py.
+        """
         if balanced:
             # Balanced sampling as described in the paper
+            examples = []
             for _ in range(n_examples):
-                pair = []
-                for _ in range(2):
-                    # Randomly select number of digits between min and max
-                    digits = random.randint(min_digits, max_digits)
-                    # Generate number with exactly 'digits' digits
-                    min_number = 10**(digits-1) if digits > 1 else 0
-                    max_number = (10**digits) - 1
-                    pair.append(random.randint(min_number, max_number))
-                examples.append(tuple(pair))
+                # Randomly select number of digits between min and max
+                digits = random.randint(min_digits, max_digits)
+                # Generate number with exactly 'digits' digits
+                min_number = 10**(digits-1) if digits > 1 else 0
+                max_number = (10**digits) - 1
+                examples.append((random.randint(min_number, max_number), 
+                               random.randint(min_number, max_number)))
         else:
             # Random sampling as described in the paper
+            # This generates numbers with potentially any number of digits up to max_digits
             max_number = (10**max_digits) - 1
             examples = [
                 (random.randint(0, max_number), random.randint(0, max_number))
                 for _ in range(n_examples)
             ]
-            
+        
         return examples
 
     def __len__(self) -> int:
