@@ -282,7 +282,7 @@ def main():
                         help='Run validation every N epochs')
     parser.add_argument('--plot_only', action='store_true',
                         help='Only plot existing results without running experiments')
-    parser.add_argument('--seed', type=int, default=SEEDS[0], nargs='+',
+    parser.add_argument('--seed', type=int, default=SEEDS[0], nargs='*',
                         help='Random seed(s) for the experiment. Specify multiple seeds for statistical significance.')
     
     args = parser.parse_args()
@@ -302,6 +302,13 @@ def main():
             print("No results found to plot.")
         return
     
+    # Ensure seeds is a list
+    seeds = args.seed
+    if not seeds:  # If empty list, use default SEEDS
+        seeds = SEEDS
+    elif not isinstance(seeds, list):  # If single value, convert to list
+        seeds = [seeds]
+    
     # Run experiments
     run_experiments(
         output_dir=args.output_dir,
@@ -309,7 +316,7 @@ def main():
         digit_lengths=args.digit_lengths,
         params=params,
         resume=not args.no_resume,
-        seeds=args.seed
+        seeds=seeds
     )
 
 if __name__ == '__main__':
