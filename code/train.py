@@ -17,6 +17,13 @@ from config import get_argument_parser
 from dataset import ArithmeticDataset
 from model import ArithmeticTransformer
 
+# Import GPU optimizations
+try:
+    from gpu_optimizations import apply_optimizations
+except ImportError:
+    # Define a dummy function if the module is not available
+    def apply_optimizations():
+        pass
 
 def main():
     """Main function to train and evaluate the model."""
@@ -45,6 +52,9 @@ def main():
     torch.manual_seed(args.seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(args.seed)
+    
+    # Apply GPU optimizations early
+    apply_optimizations()
     
     # Create datasets
     print("Creating datasets...")
@@ -135,30 +145,18 @@ def main():
     print("Creating trainer...")
     trainer_kwargs = {
         'max_epochs': args.max_epochs,
-        'callbacks': [checkpoint_callback],
         'gradient_clip_val': args.gradient_clip_val,
         'accumulate_grad_batches': args.accumulate_grad_batches,
+        'accelerator': 'auto',
+        'devices': 'auto',
+        'precision': args.precision,
         'logger': True,
         'enable_progress_bar': True,
-        'enable_model_summary': True,
+        'callbacks': [checkpoint_callback],
+        'default_root_dir': args.output_dir,
+        'benchmark': True,  # Enable cuDNN benchmarking for better performance
+        # 'num_sanity_val_steps': 2,  # Limit sanity check steps for faster startup
     }
-    
-    # TPU-specific configuration
-    if is_tpu:
-        trainer_kwargs.update({
-            'accelerator': 'tpu',
-            'devices': 'auto',
-            'precision': 'bf16-true',  # Updated precision format for XLA/TPU
-            'num_sanity_val_steps': 0,  # Skip sanity check to avoid hanging
-        })
-    else:
-        # GPU/CPU configuration
-        if torch.cuda.is_available():
-            trainer_kwargs.update({
-                'accelerator': 'gpu',
-                'devices': 'auto',
-                'precision': args.precision,
-            })
     
     trainer = pl.Trainer(**trainer_kwargs)
     
