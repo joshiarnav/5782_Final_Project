@@ -138,6 +138,10 @@ def main():
         else:
             trainer_kwargs['accelerator'] = 'gpu'
             trainer_kwargs['devices'] = args.gpus
+    else:
+        trainer_kwargs['accelerator'] = 'auto'
+        trainer_kwargs['devices'] = 'auto'
+        trainer_kwargs['strategy'] = 'auto'
     
     # Handle precision
     if hasattr(args, 'precision'):
