@@ -1,12 +1,7 @@
 """Experiment runner for arithmetic transformer models.
 
-This module implements the exact experiment setup from the paper:
-- T5-base model (closest to T5-220M mentioned in the paper)
-- 5 runs per configuration with different random seeds
-- 1,000 training examples per run (balanced sampling)
-- 1,000 validation examples for checkpoint selection
-- 100 epochs of training
-- Error bars showing 95% confidence intervals
+This module implements the experiment setup from the paper, with the option to run
+with a single seed by default for faster experimentation.
 """
 
 import os
@@ -40,11 +35,13 @@ ORTHOGRAPHIES = [
 # Define the digit lengths to test
 DIGIT_LENGTHS = [2, 5, 10, 15, 20, 25, 30]
 
-# Number of runs per configuration (for statistical significance)
-NUM_RUNS = 5
+# # Number of runs per configuration (for statistical significance)
+# NUM_RUNS = 5
 
-# Random seeds for each run
-SEEDS = [42, 123, 456, 789, 101]
+# # Random seeds for each run
+# SEEDS = [42, 123, 456, 789, 101]
+# Default seed
+DEFAULT_SEED = 42
 
 # Default parameters matching the paper
 DEFAULT_PARAMS = {
@@ -200,7 +197,7 @@ def plot_results(results, output_dir):
     # Show the plot
     plt.show()
 
-def run_experiments(output_dir, orthographies=None, digit_lengths=None, params=None, resume=True):
+def run_experiments(output_dir, orthographies=None, digit_lengths=None, params=None, resume=True, seed=DEFAULT_SEED):
     """Run all experiments and generate plots."""
     # Set default values
     if orthographies is None:
@@ -239,15 +236,15 @@ def run_experiments(output_dir, orthographies=None, digit_lengths=None, params=N
                     accuracies.append(results[orthography][digit_key]['runs'][seed_key])
                     continue
                 
-                # Run the experiment
-                accuracy = run_single_experiment(orthography, max_digits, seed, output_dir, params)
+            # Run the experiment
+            accuracy = run_single_experiment(orthography, max_digits, seed, output_dir, params)
+            
+            # Save the result
+            results[orthography][digit_key]['runs'][seed_key] = accuracy
+            accuracies.append(accuracy)
                 
-                # Save the result
-                results[orthography][digit_key]['runs'][seed_key] = accuracy
-                accuracies.append(accuracy)
-                
-                # Save after each experiment in case of interruption
-                save_results(results, output_dir)
+            # Save after each experiment in case of interruption
+            save_results(results, output_dir)
             
             # Calculate statistics
             mean, ci_lower, ci_upper = calculate_statistics(accuracies)
@@ -282,6 +279,8 @@ def main():
                         help='Run validation every N epochs')
     parser.add_argument('--plot_only', action='store_true',
                         help='Only plot existing results without running experiments')
+    parser.add_argument('--seed', type=int, default=DEFAULT_SEED,
+                        help='Random seed for the experiment')
     
     args = parser.parse_args()
     
@@ -306,7 +305,8 @@ def main():
         orthographies=args.orthographies,
         digit_lengths=args.digit_lengths,
         params=params,
-        resume=not args.no_resume
+        resume=not args.no_resume,
+        seed=args.seed
     )
 
 if __name__ == '__main__':
