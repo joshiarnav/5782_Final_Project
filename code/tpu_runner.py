@@ -16,7 +16,7 @@ sys.path.append(os.getcwd())
 from dataset import ArithmeticDataset
 from model import ArithmeticTransformer
 from config import get_argument_parser
-
+from tpu_patch import apply_patches  # Import the TPU patch
 
 def train_on_tpu(args=None):
     """Run training on TPU with optimized settings."""
@@ -136,7 +136,6 @@ def train_on_tpu(args=None):
         'enable_progress_bar': True,
         'enable_model_summary': True,
         # 'num_sanity_val_steps': 0,  # Skip sanity check to avoid hanging
-        # 'compile_backend': 'xla',  # Enable XLA compilation for TPU performance
     }
     
     trainer = pl.Trainer(**trainer_kwargs)
@@ -167,6 +166,9 @@ def run_from_colab(train_size=1000, val_size=200, test_size=200,
                   max_digits_train=5, max_digits_test=5,
                   batch_size=32, max_epochs=5):
     """Helper function to run from a Colab notebook with custom parameters."""
+    # Apply TPU patches first
+    apply_patches()
+    
     # Create a proper argparse.Namespace object for PyTorch Lightning compatibility
     import argparse
     import os
@@ -213,4 +215,5 @@ def run_from_colab(train_size=1000, val_size=200, test_size=200,
 
 
 if __name__ == '__main__':
+    apply_patches()  # Apply the TPU patch
     train_on_tpu()
