@@ -59,9 +59,9 @@ DEFAULT_PARAMS = {
     'train_batch_size': 128,
     'val_batch_size': 512,
     'max_seq_length': 512,
-    'num_workers': 2,
+    'num_workers': 4,
     'max_epochs': 100,                # 100 epochs as in the paper
-    'check_val_every_n_epoch': 1,
+    'check_val_every_n_epoch': 5,
     'precision': 32,
     'gradient_clip_val': 1.0,
     'accumulate_grad_batches': 4,
@@ -278,6 +278,8 @@ def main():
                         help='Number of training examples')
     parser.add_argument('--max_epochs', type=int, default=DEFAULT_PARAMS['max_epochs'],
                         help='Maximum number of training epochs')
+    parser.add_argument('--check_val_every_n_epoch', type=int, default=DEFAULT_PARAMS['check_val_every_n_epoch'],
+                        help='Run validation every N epochs')
     parser.add_argument('--plot_only', action='store_true',
                         help='Only plot existing results without running experiments')
     
@@ -287,6 +289,7 @@ def main():
     params = DEFAULT_PARAMS.copy()
     params['train_size'] = args.train_size
     params['max_epochs'] = args.max_epochs
+    params['check_val_every_n_epoch'] = args.check_val_every_n_epoch
     
     # Plot only if requested
     if args.plot_only:

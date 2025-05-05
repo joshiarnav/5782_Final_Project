@@ -223,7 +223,12 @@ class ArithmeticTransformer(pl.LightningModule):
             input_ids=input_ids,
             attention_mask=attention_mask,
             do_sample=False,
-            max_length=self.config.max_seq_length
+            # max_length=min(128, self.config.max_seq_length),  # Use smaller max_length for validation
+            num_beams=1,                # Use greedy decoding for validation
+            early_stopping=True,        # Stop when a complete sequence is generated
+            use_cache=True,             # Use KV cache for faster generation
+            # return_dict_in_generate=False,  # Return tensor for efficiency
+            # output_scores=False         # Don't compute scores for validation
         )
         
         # Decode predictions
