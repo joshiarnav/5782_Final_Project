@@ -17,9 +17,14 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
-import subprocess
 from datetime import datetime
 from scipy import stats
+from argparse import Namespace
+
+# Import the train module
+import sys
+sys.path.append(os.getcwd())
+from train import run_experiment
 
 # Define the orthographies to test (as described in the paper)
 ORTHOGRAPHIES = [
@@ -89,48 +94,32 @@ def save_results(results, results_dir):
         json.dump(results, f, indent=2)
     print(f"Results saved to {results_file}")
 
-def run_experiment(orthography, max_digits, seed, output_dir, params=None):
+def run_single_experiment(orthography, max_digits, seed, output_dir, params=None):
     """Run a single experiment with the given parameters."""
     if params is None:
         params = DEFAULT_PARAMS.copy()
     
     # Update parameters for this experiment
-    params['orthography'] = orthography
-    params['max_digits_train'] = max_digits
-    params['max_digits_test'] = max_digits
-    params['seed'] = seed
-    params['output_dir'] = os.path.join(output_dir, f"{orthography}_{max_digits}_digits_seed{seed}")
+    experiment_params = params.copy()
+    experiment_params['orthography'] = orthography
+    experiment_params['max_digits_train'] = max_digits
+    experiment_params['max_digits_test'] = max_digits
+    experiment_params['seed'] = seed
+    experiment_params['output_dir'] = os.path.join(output_dir, f"{orthography}_{max_digits}_digits_seed{seed}")
     
-    # Create the command
-    cmd = ["python", "train.py"]
-    for key, value in params.items():
-        if isinstance(value, bool):
-            if value:
-                cmd.append(f"--{key}")
-        else:
-            cmd.append(f"--{key}={value}")
+    # Convert to Namespace object for compatibility with train.py
+    args = Namespace(**experiment_params)
     
-    # Run the command
+    # Run the experiment directly by importing train.py
     print(f"\n{'='*80}\nRunning experiment: {orthography}, {max_digits} digits, seed {seed}\n{'='*80}\n")
-    print(" ".join(cmd))
+    print(f"Configuration: {args}")
     
     try:
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
-        print(result.stdout)
-        
-        # Extract results
-        results_file = os.path.join(params['output_dir'], 'results.json')
-        if os.path.exists(results_file):
-            with open(results_file, 'r') as f:
-                experiment_result = json.load(f)
-                return experiment_result.get('test_exact_match', 0.0)
-        else:
-            print(f"Warning: Results file not found at {results_file}")
-            return 0.0
-    except subprocess.CalledProcessError as e:
+        # Call run_experiment from train.py
+        result = run_experiment(args)
+        return result.get('test_exact_match', 0.0)
+    except Exception as e:
         print(f"Error running experiment: {e}")
-        print(f"Stdout: {e.stdout}")
-        print(f"Stderr: {e.stderr}")
         return 0.0
 
 def calculate_statistics(accuracies):
@@ -207,6 +196,9 @@ def plot_results(results, output_dir):
     pdf_file = os.path.join(output_dir, 'figure1_reproduction.pdf')
     plt.savefig(pdf_file)
     print(f"PDF plot saved to {pdf_file}")
+    
+    # Show the plot
+    plt.show()
 
 def run_experiments(output_dir, orthographies=None, digit_lengths=None, params=None, resume=True):
     """Run all experiments and generate plots."""
@@ -248,7 +240,7 @@ def run_experiments(output_dir, orthographies=None, digit_lengths=None, params=N
                     continue
                 
                 # Run the experiment
-                accuracy = run_experiment(orthography, max_digits, seed, output_dir, params)
+                accuracy = run_single_experiment(orthography, max_digits, seed, output_dir, params)
                 
                 # Save the result
                 results[orthography][digit_key]['runs'][seed_key] = accuracy
