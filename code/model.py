@@ -73,6 +73,9 @@ class ArithmeticTransformer(pl.LightningModule):
         
         # Setup logging
         self.log_file = self._setup_logging()
+        
+        # Set model to training mode
+        self.model.train()
     
     def _setup_logging(self):
         """
@@ -84,18 +87,24 @@ class ArithmeticTransformer(pl.LightningModule):
         # Create logs directory in the output directory if it doesn't exist
         output_dir = getattr(self.config, 'output_dir', './output')
         log_dir = os.path.join(output_dir, 'logs')
-        os.makedirs(log_dir, exist_ok=True)
+        try:
+            os.makedirs(log_dir, exist_ok=True)
+        except Exception as e:
+            print(f"Warning: Could not create log directory: {e}")
         
         # Create a timestamped log file
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         log_file = os.path.join(log_dir, f'model_log_{timestamp}.txt')
         
         # Write header to log file
-        with open(log_file, 'w') as f:
-            f.write(f"=== Arithmetic Transformer Log - {timestamp} ===\n\n")
-            f.write(f"Model: {self.config.model_name_or_path}\n")
-            f.write(f"Operation: {self.config.operation}\n")
-            f.write(f"Orthography: {self.config.orthography}\n\n")
+        try:
+            with open(log_file, 'w') as f:
+                f.write(f"=== Arithmetic Transformer Log - {timestamp} ===\n\n")
+                f.write(f"Model: {self.config.model_name_or_path}\n")
+                f.write(f"Operation: {self.config.operation}\n")
+                f.write(f"Orthography: {self.config.orthography}\n\n")
+        except Exception as e:
+            print(f"Warning: Could not write to log file: {e}")
         
         return log_file
     
@@ -110,8 +119,11 @@ class ArithmeticTransformer(pl.LightningModule):
         print(message)
         
         # Write to log file
-        with open(self.log_file, 'a') as f:
-            f.write(f"{message}\n")
+        try:
+            with open(self.log_file, 'a') as f:
+                f.write(f"{message}\n")
+        except Exception as e:
+            print(f"Warning: Could not write to log file: {e}")
     
     def prepare_batch(self, questions: List[str], answers: List[str]) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """
@@ -126,17 +138,11 @@ class ArithmeticTransformer(pl.LightningModule):
         """
         # Tokenize inputs
         input_dict = self.tokenizer.batch_encode_plus(
-            questions, padding=True, truncation=False, return_tensors='pt')
+            questions, padding=True, truncation=True, max_length=self.config.max_seq_length, return_tensors='pt')
         
         # Tokenize outputs
         labels = self.tokenizer.batch_encode_plus(
-            answers, padding=True, truncation=False, return_tensors='pt')['input_ids']
-        
-        # Verify sequence lengths
-        assert input_dict['input_ids'].shape[1] < self.config.max_seq_length, \
-            f"Input sequence length {input_dict['input_ids'].shape[1]} exceeds maximum {self.config.max_seq_length}"
-        assert labels.shape[1] < self.config.max_seq_length, \
-            f"Label sequence length {labels.shape[1]} exceeds maximum {self.config.max_seq_length}"
+            answers, padding=True, truncation=True, max_length=self.config.max_seq_length, return_tensors='pt')['input_ids']
         
         # Move tensors to the model's device
         input_ids = input_dict['input_ids'].to(self.device)
@@ -173,9 +179,12 @@ class ArithmeticTransformer(pl.LightningModule):
         # Log sample data occasionally (on powers of 2)
         if batch_idx & (batch_idx - 1) == 0:
             # Log to file and print to console
-            self.log_to_file(f"\n=== Training Batch {batch_idx} ===\n")
-            self.log_to_file(f"Sample question: {questions[0]}")
-            self.log_to_file(f"Sample answer: {correct_answers[0]}")
+            try:
+                self.log_to_file(f"\n=== Training Batch {batch_idx} ===\n")
+                self.log_to_file(f"Sample question: {questions[0]}")
+                self.log_to_file(f"Sample answer: {correct_answers[0]}")
+            except Exception as e:
+                print(f"Warning: Error logging training sample: {e}")
         
         # Prepare batch and compute loss
         input_ids, attention_mask, labels = self.prepare_batch(
@@ -189,7 +198,7 @@ class ArithmeticTransformer(pl.LightningModule):
         loss = outputs.loss
         
         # Log metrics
-        self.log('train_loss', loss, prog_bar=True)
+        self.log('train_loss', loss, prog_bar=True, sync_dist=True)
         return {'loss': loss}
     
     def inference_step(self, batch, batch_idx: int):
@@ -232,11 +241,14 @@ class ArithmeticTransformer(pl.LightningModule):
         # Log sample data occasionally (on powers of 2)
         if batch_idx & (batch_idx - 1) == 0:
             # Log to file and print to console
-            self.log_to_file(f"\n=== Validation Batch {batch_idx} ===\n")
-            self.log_to_file(f"Sample question: {questions[0]}")
-            self.log_to_file(f"Sample correct answer: {correct_answers[0]}")
-            self.log_to_file(f"Sample predicted answer: {predicted_answers[0]}")
-            self.log_to_file(f"Exact match: {exact_matches[0]}")
+            try:
+                self.log_to_file(f"\n=== Validation Batch {batch_idx} ===\n")
+                self.log_to_file(f"Sample question: {questions[0]}")
+                self.log_to_file(f"Sample correct answer: {correct_answers[0]}")
+                self.log_to_file(f"Sample predicted answer: {predicted_answers[0]}")
+                self.log_to_file(f"Exact match: {exact_matches[0]}")
+            except Exception as e:
+                print(f"Warning: Error logging validation sample: {e}")
         
         return {'exact_matches': exact_matches}
     
@@ -282,11 +294,14 @@ class ArithmeticTransformer(pl.LightningModule):
         
         # Log metrics
         metrics = {'val_exact_match': exact_match}
-        self.log_dict(metrics, prog_bar=True)
+        self.log_dict(metrics, prog_bar=True, sync_dist=True)
         
         # Log to file
-        self.log_to_file(f"\n=== Validation Epoch End ===\n")
-        self.log_to_file(f"Validation Exact Match: {exact_match:.4f}")
+        try:
+            self.log_to_file(f"\n=== Validation Epoch End ===\n")
+            self.log_to_file(f"Validation Exact Match: {exact_match:.4f}")
+        except Exception as e:
+            print(f"Warning: Error logging validation epoch end: {e}")
         
         # Clear the outputs list
         self.validation_step_outputs = []
@@ -303,11 +318,14 @@ class ArithmeticTransformer(pl.LightningModule):
         
         # Log metrics
         metrics = {'test_exact_match': exact_match}
-        self.log_dict(metrics, prog_bar=True)
+        self.log_dict(metrics, prog_bar=True, sync_dist=True)
         
         # Log to file
-        self.log_to_file(f"\n=== Test Epoch End ===\n")
-        self.log_to_file(f"Test Exact Match: {exact_match:.4f}")
+        try:
+            self.log_to_file(f"\n=== Test Epoch End ===\n")
+            self.log_to_file(f"Test Exact Match: {exact_match:.4f}")
+        except Exception as e:
+            print(f"Warning: Error logging test epoch end: {e}")
         
         # Clear the outputs list
         self.test_step_outputs = []

@@ -6,3 +6,6 @@
 **/research.md
 **/__pycache__
 **/*.ckpt
+**/implementation.py
+**/logs
+**/lightning_logs/
