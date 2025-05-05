@@ -82,7 +82,7 @@ def train_on_tpu(args=None):
     # Critical TPU settings: num_workers=0, persistent_workers=False
     train_dataloader = DataLoader(
         dataset_train, 
-        batch_size=args.train_batch_size,
+        batch_size=args.train_batch_size*2,  # Increase batch size for TPU performance
         shuffle=True, 
         num_workers=0,  # Must be 0 for TPU
         persistent_workers=False,
@@ -91,7 +91,7 @@ def train_on_tpu(args=None):
     
     val_dataloader = DataLoader(
         dataset_val, 
-        batch_size=args.val_batch_size, 
+        batch_size=args.val_batch_size*2,  # Increase batch size for TPU performance
         shuffle=False,
         num_workers=0,  # Must be 0 for TPU
         persistent_workers=False,
@@ -100,7 +100,7 @@ def train_on_tpu(args=None):
     
     test_dataloader = DataLoader(
         dataset_test, 
-        batch_size=args.val_batch_size,
+        batch_size=args.val_batch_size*2,  # Increase batch size for TPU performance
         shuffle=False, 
         num_workers=0,  # Must be 0 for TPU
         persistent_workers=False,
@@ -125,16 +125,18 @@ def train_on_tpu(args=None):
     trainer_kwargs = {
         'max_epochs': args.max_epochs,
         'callbacks': [checkpoint_callback],
-        'gradient_clip_val': args.gradient_clip_val,
+        'gradient_clip_val': None,  # Disable gradient clipping for TPU performance
         'accumulate_grad_batches': args.accumulate_grad_batches,
         'deterministic': False,  # TPUs work better with non-deterministic operations
-        'accelerator': 'tpu',
+        'accelerator': 'auto',
         'devices': 'auto',
+        'strategy': 'auto',
         'precision': 'bf16-true',  # Updated precision format for XLA/TPU
         'logger': True,
         'enable_progress_bar': True,
         'enable_model_summary': True,
         'num_sanity_val_steps': 0,  # Skip sanity check to avoid hanging
+        'compile_backend': 'xla',  # Enable XLA compilation for TPU performance
     }
     
     trainer = pl.Trainer(**trainer_kwargs)
