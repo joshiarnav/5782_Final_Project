@@ -86,25 +86,36 @@ def main():
     
     # Create dataloaders
     print("Creating dataloaders...")
+    # For TPU compatibility, set num_workers=0 and disable multiprocessing
+    is_tpu = 'TPU_NAME' in os.environ
+    num_workers = 0 if is_tpu else args.num_workers
+    persistent_workers = False if is_tpu else (num_workers > 0)
+    
     train_dataloader = DataLoader(
         dataset_train, 
         batch_size=args.train_batch_size,
         shuffle=True, 
-        num_workers=args.num_workers
+        num_workers=num_workers,
+        persistent_workers=persistent_workers,
+        pin_memory=not is_tpu  # Pin memory only for GPU, not for TPU
     )
     
     val_dataloader = DataLoader(
         dataset_val, 
         batch_size=args.val_batch_size, 
         shuffle=False,
-        num_workers=args.num_workers
+        num_workers=num_workers,
+        persistent_workers=persistent_workers,
+        pin_memory=not is_tpu  # Pin memory only for GPU, not for TPU
     )
     
     test_dataloader = DataLoader(
         dataset_test, 
-        batch_size=args.val_batch_size,
+        batch_size=args.val_batch_size,  # Use val_batch_size since test_batch_size doesn't exist
         shuffle=False, 
-        num_workers=args.num_workers
+        num_workers=num_workers,
+        persistent_workers=persistent_workers,
+        pin_memory=not is_tpu  # Pin memory only for GPU, not for TPU
     )
     
     # Create checkpoint callback
@@ -120,32 +131,34 @@ def main():
         every_n_epochs=args.check_val_every_n_epoch
     )
     
-    # Create trainer with updated parameters for PyTorch Lightning 2.0+
+    # Create trainer
     print("Creating trainer...")
     trainer_kwargs = {
         'max_epochs': args.max_epochs,
         'callbacks': [checkpoint_callback],
         'gradient_clip_val': args.gradient_clip_val,
         'accumulate_grad_batches': args.accumulate_grad_batches,
-        'deterministic': True
+        'logger': True,
+        'enable_progress_bar': True,
+        'enable_model_summary': True,
     }
     
-    # Handle device configuration
-    if args.gpus is not None and args.gpus > 0:
-        if args.gpus == 1:
-            trainer_kwargs['accelerator'] = 'gpu'
-            trainer_kwargs['devices'] = 1
-        else:
-            trainer_kwargs['accelerator'] = 'gpu'
-            trainer_kwargs['devices'] = args.gpus
+    # TPU-specific configuration
+    if is_tpu:
+        trainer_kwargs.update({
+            'accelerator': 'tpu',
+            'devices': 'auto',
+            'precision': 'bf16-mixed',  # Use bfloat16 for TPU
+            'num_sanity_val_steps': 0,  # Skip sanity check to avoid hanging
+        })
     else:
-        trainer_kwargs['accelerator'] = 'auto'
-        trainer_kwargs['devices'] = 'auto'
-        trainer_kwargs['strategy'] = 'auto'
-    
-    # Handle precision
-    if hasattr(args, 'precision'):
-        trainer_kwargs['precision'] = args.precision
+        # GPU/CPU configuration
+        if torch.cuda.is_available():
+            trainer_kwargs.update({
+                'accelerator': 'gpu',
+                'devices': 'auto',
+                'precision': args.precision,
+            })
     
     trainer = pl.Trainer(**trainer_kwargs)
     
