@@ -48,7 +48,7 @@ SEEDS = [42]
 DEFAULT_PARAMS = {
     'operation': 'addition',
     'model_name_or_path': 't5-base',  # Closest to T5-220M in the paper
-    'train_size': 1000,               # 1,000 examples as in the paper
+    'train_size': 10000,               # 1,000 examples as in the paper
     'val_size': 1000,                 # 1,000 examples for checkpoint selection
     'test_size': 1000,                # Test set size
     'min_digits_train': 2,
@@ -58,7 +58,7 @@ DEFAULT_PARAMS = {
     'val_batch_size': 512,
     'max_seq_length': 512,
     'num_workers': 4,                 # Increased from 4
-    'max_epochs': 100,                # 100 epochs as in the paper
+    'max_epochs': 50,                # 100 epochs as in the paper
     'check_val_every_n_epoch': 10,
     'precision': 32,
     'gradient_clip_val': 1.0,
@@ -92,7 +92,7 @@ def save_results(results, results_dir):
         json.dump(results, f, indent=2)
     print(f"Results saved to {results_file}")
 
-def run_single_experiment(orthography, max_digits, seed, output_dir, params=None):
+def run_single_experiment(orthography, max_digits, seed, output_dir, params=None, delete_checkpoints=False):
     """Run a single experiment with the given parameters."""
     if params is None:
         params = DEFAULT_PARAMS.copy()
@@ -115,7 +115,20 @@ def run_single_experiment(orthography, max_digits, seed, output_dir, params=None
     try:
         # Call run_experiment from train.py
         result = run_experiment(args)
-        return result.get('test_exact_match', 0.0)
+        test_accuracy = result.get('test_exact_match', 0.0)
+        
+        # Delete checkpoints if requested
+        if delete_checkpoints:
+            checkpoint_dir = experiment_params['output_dir']
+            # Find and delete all checkpoint files
+            for root, dirs, files in os.walk(checkpoint_dir):
+                for file in files:
+                    if file.endswith('.ckpt'):
+                        ckpt_path = os.path.join(root, file)
+                        print(f"Deleting checkpoint: {ckpt_path}")
+                        os.remove(ckpt_path)
+        
+        return test_accuracy
     except Exception as e:
         print(f"Error running experiment: {e}")
         return 0.0
@@ -198,7 +211,7 @@ def plot_results(results, output_dir):
     # Show the plot
     plt.show()
 
-def run_experiments(output_dir, orthographies=None, digit_lengths=None, params=None, resume=True, seeds=None):
+def run_experiments(output_dir, orthographies=None, digit_lengths=None, params=None, resume=True, seeds=None, delete_checkpoints=False):
     """Run all experiments and generate plots."""
     # Set default values
     if orthographies is None:
@@ -240,7 +253,7 @@ def run_experiments(output_dir, orthographies=None, digit_lengths=None, params=N
                 else:
                     # Run the experiment
                     print(f"\n{'='*80}\nRunning experiment: {orthography}, {max_digits} digits, seed {seed}\n{'='*80}\n")
-                    accuracy = run_single_experiment(orthography, max_digits, seed, output_dir, params)
+                    accuracy = run_single_experiment(orthography, max_digits, seed, output_dir, params, delete_checkpoints)
                     
                     # Save the result
                     results[orthography][digit_key]['runs'][seed_key] = accuracy
@@ -284,6 +297,8 @@ def main():
                         help='Only plot existing results without running experiments')
     parser.add_argument('--seed', type=int, default=SEEDS[0], nargs='*',
                         help='Random seed(s) for the experiment. Specify multiple seeds for statistical significance.')
+    parser.add_argument('--delete_checkpoints', action='store_true',
+                        help='Delete model checkpoints after experiment evaluation to save disk space')
     
     args = parser.parse_args()
     
@@ -316,7 +331,8 @@ def main():
         digit_lengths=args.digit_lengths,
         params=params,
         resume=not args.no_resume,
-        seeds=seeds
+        seeds=seeds,
+        delete_checkpoints=args.delete_checkpoints
     )
 
 if __name__ == '__main__':
