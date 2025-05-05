@@ -135,8 +135,8 @@ def train_on_tpu(args=None):
         'logger': True,
         'enable_progress_bar': True,
         'enable_model_summary': True,
-        'num_sanity_val_steps': 0,  # Skip sanity check to avoid hanging
-        'compile_backend': 'xla',  # Enable XLA compilation for TPU performance
+        # 'num_sanity_val_steps': 0,  # Skip sanity check to avoid hanging
+        # 'compile_backend': 'xla',  # Enable XLA compilation for TPU performance
     }
     
     trainer = pl.Trainer(**trainer_kwargs)
