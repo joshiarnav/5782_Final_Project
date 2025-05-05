@@ -32,8 +32,10 @@ def train_on_tpu(args=None):
     
     print(f"Configuration: {args}")
     
-    # Create output directory
+    # Create output directory with absolute path
+    args.output_dir = os.path.abspath(args.output_dir)
     os.makedirs(args.output_dir, exist_ok=True)
+    print(f"Using output directory: {args.output_dir}")
     
     # Set random seeds
     pl.seed_everything(args.seed)
@@ -170,7 +172,9 @@ def run_from_colab(train_size=1000, val_size=200, test_size=200,
     args = Args()
     
     # Set all required parameters
-    args.output_dir = './output'
+    # Use absolute path for output directory in Colab
+    import os
+    args.output_dir = os.path.abspath('./output')
     args.model_name_or_path = 't5-base'
     args.operation = 'addition'
     args.orthography = '10ebased'
