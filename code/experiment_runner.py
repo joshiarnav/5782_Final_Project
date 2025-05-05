@@ -38,11 +38,11 @@ DIGIT_LENGTHS = [2, 5, 10, 15, 20, 25, 30]
 # # Number of runs per configuration (for statistical significance)
 # NUM_RUNS = 5
 
-# # Random seeds for each run
-# SEEDS = [42, 123, 456, 789, 101]
+# Random seeds for each run
+# Default is a single seed for faster experimentation
 SEEDS = [42]
-# Default seed
-# DEFAULT_SEED = 42
+# For multiple seeds, uncomment the following line
+# SEEDS = [42, 123, 456, 789, 101]
 
 # Default parameters matching the paper
 DEFAULT_PARAMS = {
@@ -198,7 +198,7 @@ def plot_results(results, output_dir):
     # Show the plot
     plt.show()
 
-def run_experiments(output_dir, orthographies=None, digit_lengths=None, params=None, resume=True, seed=SEEDS[0]):
+def run_experiments(output_dir, orthographies=None, digit_lengths=None, params=None, resume=True, seeds=None):
     """Run all experiments and generate plots."""
     # Set default values
     if orthographies is None:
@@ -207,6 +207,8 @@ def run_experiments(output_dir, orthographies=None, digit_lengths=None, params=N
         digit_lengths = DIGIT_LENGTHS
     if params is None:
         params = DEFAULT_PARAMS.copy()
+    if seeds is None:
+        seeds = SEEDS
     
     # Create output directory
     os.makedirs(output_dir, exist_ok=True)
@@ -226,26 +228,26 @@ def run_experiments(output_dir, orthographies=None, digit_lengths=None, params=N
             if digit_key not in results[orthography]:
                 results[orthography][digit_key] = {'runs': {}}
             
-            # Run multiple times with different seeds
+            # Run with all specified seeds
             accuracies = []
-            for seed_idx, seed in enumerate(SEEDS):
+            for seed in seeds:
                 seed_key = str(seed)
                 
                 # Skip if already done
                 if resume and seed_key in results[orthography][digit_key]['runs']:
                     print(f"Skipping experiment for {orthography}, {max_digits} digits, seed {seed} (already done)")
                     accuracies.append(results[orthography][digit_key]['runs'][seed_key])
-                    continue
-                
-            # Run the experiment
-            accuracy = run_single_experiment(orthography, max_digits, seed, output_dir, params)
-            
-            # Save the result
-            results[orthography][digit_key]['runs'][seed_key] = accuracy
-            accuracies.append(accuracy)
-                
-            # Save after each experiment in case of interruption
-            save_results(results, output_dir)
+                else:
+                    # Run the experiment
+                    print(f"\n{'='*80}\nRunning experiment: {orthography}, {max_digits} digits, seed {seed}\n{'='*80}\n")
+                    accuracy = run_single_experiment(orthography, max_digits, seed, output_dir, params)
+                    
+                    # Save the result
+                    results[orthography][digit_key]['runs'][seed_key] = accuracy
+                    accuracies.append(accuracy)
+                    
+                    # Save after each experiment
+                    save_results(results, output_dir)
             
             # Calculate statistics
             mean, ci_lower, ci_upper = calculate_statistics(accuracies)
@@ -280,8 +282,8 @@ def main():
                         help='Run validation every N epochs')
     parser.add_argument('--plot_only', action='store_true',
                         help='Only plot existing results without running experiments')
-    parser.add_argument('--seed', type=int, default=SEEDS[0],
-                        help='Random seed for the experiment')
+    parser.add_argument('--seed', type=int, default=SEEDS[0], nargs='+',
+                        help='Random seed(s) for the experiment. Specify multiple seeds for statistical significance.')
     
     args = parser.parse_args()
     
@@ -307,7 +309,7 @@ def main():
         digit_lengths=args.digit_lengths,
         params=params,
         resume=not args.no_resume,
-        seed=args.seed
+        seeds=args.seed
     )
 
 if __name__ == '__main__':
