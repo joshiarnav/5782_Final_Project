@@ -47,9 +47,11 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
     
     # Set random seeds for reproducibility
-    random.seed(args.seed)
-    pl.seed_everything(args.seed)
-    torch.manual_seed(args.seed)
+    if args.seed is not None:
+        random.seed(args.seed)
+        pl.seed_everything(args.seed)
+        torch.manual_seed(args.seed)
+        print(f"Seed set to {args.seed}")
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(args.seed)
     
@@ -149,13 +151,12 @@ def main():
         'accumulate_grad_batches': args.accumulate_grad_batches,
         'accelerator': 'auto',
         'devices': 'auto',
-        'precision': args.precision,
+        'precision': '16-mixed',  # Use mixed precision for better performance
         'logger': True,
         'enable_progress_bar': True,
         'callbacks': [checkpoint_callback],
         'default_root_dir': args.output_dir,
         'benchmark': True,  # Enable cuDNN benchmarking for better performance
-        # 'num_sanity_val_steps': 2,  # Limit sanity check steps for faster startup
     }
     
     trainer = pl.Trainer(**trainer_kwargs)
