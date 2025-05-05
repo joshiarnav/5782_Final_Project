@@ -148,7 +148,7 @@ def main():
         trainer_kwargs.update({
             'accelerator': 'tpu',
             'devices': 'auto',
-            'precision': 'bf16-mixed',  # Use bfloat16 for TPU
+            'precision': 'bf16-true',  # Updated precision format for XLA/TPU
             'num_sanity_val_steps': 0,  # Skip sanity check to avoid hanging
         })
     else:

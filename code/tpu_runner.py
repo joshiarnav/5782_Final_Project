@@ -130,7 +130,7 @@ def train_on_tpu(args=None):
         'deterministic': False,  # TPUs work better with non-deterministic operations
         'accelerator': 'tpu',
         'devices': 'auto',
-        'precision': 'bf16-mixed',  # Use bfloat16 for TPU
+        'precision': 'bf16-true',  # Updated precision format for XLA/TPU
         'logger': True,
         'enable_progress_bar': True,
         'enable_model_summary': True,
