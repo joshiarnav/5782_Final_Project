@@ -63,9 +63,9 @@ def configure_mixed_precision():
     supports_amp = any(gpu_type in device_name for gpu_type in amp_friendly_gpus)
     
     if supports_amp:
-        # PyTorch AMP settings
+        # Only enable TF32 which is more stable than FP16 mixed precision
         torch.backends.cuda.matmul.allow_tf32 = True  # Allow TF32 on matmul
         torch.backends.cudnn.allow_tf32 = True        # Allow TF32 on cudnn
         
-        # For PyTorch Lightning, we'll set precision='16-mixed' in the trainer
-        warnings.warn(f"Configured mixed precision settings for {device_name}")
+        # We'll keep using 32-bit precision in the trainer for stability
+        warnings.warn(f"Configured TF32 settings for {device_name} (keeping 32-bit precision for stability)")

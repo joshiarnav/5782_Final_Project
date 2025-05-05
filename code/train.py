@@ -151,7 +151,7 @@ def main():
         'accumulate_grad_batches': args.accumulate_grad_batches,
         'accelerator': 'auto',
         'devices': 'auto',
-        'precision': '16-mixed',  # Use mixed precision for better performance
+        'precision': args.precision,  # Use original precision setting (32)
         'logger': True,
         'enable_progress_bar': True,
         'callbacks': [checkpoint_callback],
