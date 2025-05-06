@@ -59,13 +59,13 @@ DEFAULT_PARAMS = {
     'val_batch_size': 512,
     'max_seq_length': 512,
     'num_workers': 4,                 # Increased from 4
-    'max_epochs': 15,                # 100 epochs as in the paper
+    'max_epochs': 25,                # 100 epochs as in the paper
     'check_val_every_n_epoch': 10,
     'precision': 32,
     'gradient_clip_val': 1.0,
     'accumulate_grad_batches': 4,
     'optimizer': 'AdamW',
-    'lr': 3e-4,
+    'lr': 3e-3, # 3e-4
     'weight_decay': 5e-5,
     'scheduler': 'StepLR',
     'gamma': 1.0,
