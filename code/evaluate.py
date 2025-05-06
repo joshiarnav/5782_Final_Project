@@ -57,6 +57,63 @@ def format_number(number, orthography, max_digits, base_number, invert_number):
         raise ValueError(f'Unsupported orthography: {orthography}')
 
 
+def evaluate_model(args):
+    """Evaluate a trained model on a test set.
+    
+    This function is used by the generalization_runner to evaluate
+    a model trained on one digit length across different test digit lengths.
+    """
+    from train import create_datasets, create_dataloaders
+    import pytorch_lightning as pl
+    import gc
+    
+    # Set random seeds for reproducibility
+    if args.seed is not None:
+        import random
+        import numpy as np
+        import torch
+        random.seed(args.seed)
+        np.random.seed(args.seed)
+        torch.manual_seed(args.seed)
+        pl.seed_everything(args.seed)
+    
+    # Create test dataset with the specified digit length
+    _, _, dataset_test = create_datasets(args)
+    _, _, test_dataloader = create_dataloaders(args, None, None, dataset_test)
+    
+    # Load the model from checkpoint
+    model = ArithmeticTransformer.load_from_checkpoint(
+        args.checkpoint_path,
+        map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    )
+    model.eval()
+    
+    # Set up a simple trainer for evaluation only
+    trainer = pl.Trainer(
+        accelerator='auto',
+        devices='auto',
+        logger=False,
+        enable_progress_bar=True,
+    )
+    
+    # Test the model
+    results = trainer.test(model, test_dataloader, verbose=True)
+    
+    # Clean up to prevent memory leaks
+    del model
+    del trainer
+    del test_dataloader
+    del dataset_test
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    
+    # Return the test results
+    if results and len(results) > 0:
+        return {'test_exact_match': results[0].get('test_exact_match', 0.0)}
+    return {'test_exact_match': 0.0}
+
+
 def main():
     """Main function to evaluate the model on custom examples."""
     parser = argparse.ArgumentParser(description='Evaluate a trained arithmetic model on custom examples.')

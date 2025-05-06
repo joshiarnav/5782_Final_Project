@@ -10,3 +10,4 @@
 **/logs
 **/lightning_logs/
 **/experiement_implementation.py
+**/test_runner.sh
