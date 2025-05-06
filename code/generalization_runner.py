@@ -41,8 +41,8 @@ DEFAULT_PARAMS = {
     'min_digits_train': 2,
     'min_digits_test': 2,            # Will be overridden for each test
     'base_number': 10,
-    'train_batch_size': 128,
-    'val_batch_size': 512,
+    'train_batch_size': 64,           # Reduced from 128 to save memory
+    'val_batch_size': 128,            # Reduced from 512 to save memory
     'max_seq_length': 512,
     'num_workers': 4,
     'max_epochs': 25,
@@ -381,7 +381,7 @@ def plot_generalization_results(results, output_dir, train_digits):
 def main():
     """Parse arguments and run the generalization experiment."""
     parser = argparse.ArgumentParser(description='Run generalization experiments for arithmetic transformer')
-    parser.add_argument('--orthographies', nargs='+', default=['10ebased'],
+    parser.add_argument('--orthographies', nargs='+', default=ORTHOGRAPHIES,
                         help='Orthographies to test (e.g., 10ebased, 10based, words)')
     parser.add_argument('--digit_lengths', nargs='+', type=int, default=DIGIT_LENGTHS,
                         help='Digit lengths to test on')
@@ -397,6 +397,12 @@ def main():
                         help='Delete model checkpoints after experiment evaluation to save disk space')
     parser.add_argument('--plot_only', action='store_true',
                         help='Only plot existing results without running experiments')
+    parser.add_argument('--epochs', type=int, default=None,
+                        help='Number of training epochs (overrides default in DEFAULT_PARAMS)')
+    parser.add_argument('--batch_size', type=int, default=None,
+                        help='Training batch size (overrides default in DEFAULT_PARAMS)')
+    parser.add_argument('--precision', type=int, choices=[16, 32], default=None,
+                        help='Training precision (16 or 32, overrides default in DEFAULT_PARAMS)')
     
     args = parser.parse_args()
     
@@ -406,6 +412,12 @@ def main():
     # Update parameters if needed
     params = DEFAULT_PARAMS.copy()
     params['balance_test'] = args.balance_test
+    if args.epochs is not None:
+        params['max_epochs'] = args.epochs
+    if args.batch_size is not None:
+        params['train_batch_size'] = args.batch_size
+    if args.precision is not None:
+        params['precision'] = args.precision
     
     if args.plot_only:
         # Only plot existing results
