@@ -35,6 +35,8 @@ DEFAULT_PARAMS = {
     'num_workers': 4,
     'precision': 32,
     'balance_test': True,             # Will be configurable via command line
+    'balance_train': True,            # Required for dataset creation
+    'balance_val': True,              # Required for dataset creation
     'invert_question': False,
     'invert_answer': False,
 }
@@ -84,7 +86,7 @@ def find_trained_models(base_dir):
     
     return models
 
-def test_model_on_digit_length(model_info, test_digits, balance_test, params=None):
+def test_model_on_digit_length(model_info, test_digits, balance_test, balance_train, balance_val, params=None):
     """Test a trained model on a specific digit length."""
     if params is None:
         params = DEFAULT_PARAMS.copy()
@@ -120,6 +122,8 @@ def test_model_on_digit_length(model_info, test_digits, balance_test, params=Non
     test_params['seed'] = seed
     test_params['output_dir'] = test_output_dir
     test_params['balance_test'] = balance_test
+    test_params['balance_train'] = balance_train  # Required for dataset creation
+    test_params['balance_val'] = balance_val    # Required for dataset creation
     test_params['checkpoint_path'] = checkpoint_path
     test_params['model_name_or_path'] = 't5-base'  # Add this to ensure it's available
     test_params['train_size'] = 10  # Small train set since we're not training
@@ -290,6 +294,8 @@ def evaluate_generalization(base_dir, digit_lengths=None, balance_test=True, ort
                         model_info=model,
                         test_digits=test_digits,
                         balance_test=balance_test,
+                        balance_train=True,
+                        balance_val=True,
                         params=DEFAULT_PARAMS
                     )
                     accuracies.append(accuracy)
