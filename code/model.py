@@ -51,7 +51,17 @@ class ArithmeticTransformer(pl.LightningModule):
         """
         super().__init__()
         self.save_hyperparameters(config)
-        self.config = config
+        
+        # Convert config to Namespace if it's a dictionary
+        from argparse import Namespace
+        if isinstance(config, dict):
+            self.config = Namespace(**config)
+        else:
+            self.config = config
+        
+        # Ensure model_name_or_path is set
+        if not hasattr(self.config, 'model_name_or_path'):
+            self.config.model_name_or_path = 't5-base'  # Default value
         
         # Initialize tokenizer and model
         self.tokenizer = AutoTokenizer.from_pretrained(self.config.model_name_or_path)
@@ -100,9 +110,9 @@ class ArithmeticTransformer(pl.LightningModule):
         try:
             with open(log_file, 'w') as f:
                 f.write(f"=== Arithmetic Transformer Log - {timestamp} ===\n\n")
-                f.write(f"Model: {self.config.model_name_or_path}\n")
-                f.write(f"Operation: {self.config.operation}\n")
-                f.write(f"Orthography: {self.config.orthography}\n\n")
+                f.write(f"Model: {getattr(self.config, 'model_name_or_path', 't5-base')}\n")
+                f.write(f"Operation: {getattr(self.config, 'operation', 'addition')}\n")
+                f.write(f"Orthography: {getattr(self.config, 'orthography', 'decimal')}\n\n")
         except Exception as e:
             print(f"Warning: Could not write to log file: {e}")
         
@@ -376,10 +386,10 @@ class ArithmeticTransformer(pl.LightningModule):
         Returns:
             Tuple of (optimizers, schedulers)
         """
-        optimizer_name = self.config.optimizer
-        scheduler_name = self.config.scheduler
-        lr = self.config.lr
-        weight_decay = self.config.weight_decay
+        optimizer_name = getattr(self.config, 'optimizer', 'AdamW')
+        scheduler_name = getattr(self.config, 'scheduler', 'StepLR')
+        lr = getattr(self.config, 'lr', 0.0004)
+        weight_decay = getattr(self.config, 'weight_decay', 5e-5)
         
         # Prepare optimizer parameters with weight decay differentiation
         no_decay = ["bias", "LayerNorm.weight"]
@@ -402,8 +412,10 @@ class ArithmeticTransformer(pl.LightningModule):
         
         # Create scheduler
         if scheduler_name == 'StepLR':
+            step_size = getattr(self.config, 'step_size', 1000)
+            gamma = getattr(self.config, 'gamma', 1.0)
             scheduler = torch.optim.lr_scheduler.StepLR(
-                optimizer, step_size=self.config.step_size, gamma=self.config.gamma)
+                optimizer, step_size=step_size, gamma=gamma)
         else:
             raise ValueError(f'Unsupported scheduler: {scheduler_name}')
         
