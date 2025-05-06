@@ -67,6 +67,7 @@ def evaluate_model(args):
     from train import create_datasets, create_dataloaders
     import pytorch_lightning as pl
     import gc
+    from argparse import Namespace
     
     # Set random seeds for reproducibility
     if args.seed is not None:
@@ -103,10 +104,36 @@ def evaluate_model(args):
     _, _, test_dataloader = create_dataloaders(args, dummy_dataset, dummy_dataset, dataset_test)
     
     # Load the model from checkpoint
-    model = ArithmeticTransformer.load_from_checkpoint(
-        args.checkpoint_path,
-        map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    )
+    try:
+        # First try loading with strict=False which is more forgiving
+        model = ArithmeticTransformer.load_from_checkpoint(
+            args.checkpoint_path,
+            map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu'),
+            strict=False
+        )
+        
+        # If the config is a dict, convert it to a Namespace
+        if isinstance(model.config, dict):
+            print("Converting config dict to Namespace...")
+            model.config = Namespace(**model.config)
+            
+        # Ensure model_name_or_path is set
+        if not hasattr(model.config, 'model_name_or_path'):
+            print("model_name_or_path not found in config, setting to default 't5-base'")
+            model.config.model_name_or_path = 't5-base'  # Default value
+            
+        # Reinitialize tokenizer if needed
+        if not hasattr(model, 'tokenizer') or model.tokenizer is None:
+            print("Reinitializing tokenizer...")
+            from transformers import AutoTokenizer
+            model.tokenizer = AutoTokenizer.from_pretrained(model.config.model_name_or_path)
+            
+    except Exception as e:
+        print(f"Error loading model: {e}")
+        import traceback
+        traceback.print_exc()
+        return {'test_exact_match': 0.0}
+    
     model.eval()
     
     # Set up a simple trainer for evaluation only

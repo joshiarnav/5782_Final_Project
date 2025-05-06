@@ -98,22 +98,39 @@ def test_model_on_digit_length(model_info, test_digits, balance_test, params=Non
     test_output_dir = os.path.join(model_dir, f"test_on_{test_digits}_digits")
     os.makedirs(test_output_dir, exist_ok=True)
     
+    # Check if this test has already been run
+    results_file = os.path.join(test_output_dir, 'results.json')
+    if os.path.exists(results_file):
+        print(f"Test already completed for {orthography} on {test_digits} digits. Skipping test.")
+        try:
+            with open(results_file, 'r') as f:
+                result = json.load(f)
+            test_accuracy = result.get('test_exact_match', 0.0)
+            return test_accuracy
+        except Exception as e:
+            print(f"Error loading existing test results: {e}. Will retest.")
+    
     # Update parameters for testing
     test_params = params.copy()
     test_params['orthography'] = orthography
     test_params['max_digits_test'] = test_digits
     test_params['min_digits_test'] = test_digits
     test_params['max_digits_train'] = test_digits  # Required by create_datasets
-    test_params['min_digits_train'] = 2           # Required by create_datasets
+    test_params['min_digits_train'] = test_digits  # Match min and max for consistency
     test_params['seed'] = seed
     test_params['output_dir'] = test_output_dir
     test_params['balance_test'] = balance_test
     test_params['checkpoint_path'] = checkpoint_path
+    test_params['model_name_or_path'] = 't5-base'  # Add this to ensure it's available
+    test_params['train_size'] = 10  # Small train set since we're not training
+    test_params['val_size'] = 10    # Small val set since we're not validating
+    test_params['test_size'] = 1000 # Standard test size
     
     # Convert to Namespace object
     args = Namespace(**test_params)
     
     print(f"Testing model on {test_digits} digits (balanced={balance_test})")
+    print(f"Using checkpoint: {checkpoint_path}")
     
     try:
         # Use evaluate_model from evaluate.py
@@ -128,7 +145,6 @@ def test_model_on_digit_length(model_info, test_digits, balance_test, params=Non
         return test_accuracy
     except Exception as e:
         print(f"Error testing model: {e}")
-        # Print traceback for debugging
         import traceback
         traceback.print_exc()
         # Clean up GPU memory even if there's an error
