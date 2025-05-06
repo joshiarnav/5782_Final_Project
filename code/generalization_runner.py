@@ -63,6 +63,21 @@ DEFAULT_PARAMS = {
     'invert_answer': False,
 }
 
+# Orthography-specific parameter overrides to handle memory issues
+ORTHOGRAPHY_PARAMS = {
+    '10ebased': {
+        'train_batch_size': 32,  # Reduced batch size
+        'val_batch_size': 64,    # Reduced batch size
+        'precision': 16,         # Use 16-bit precision
+        'accumulate_grad_batches': 2,  # Reduced accumulation
+        'max_epochs': 15,        # Fewer epochs
+    },
+    'words': {
+        'train_batch_size': 48,  # Slightly reduced batch size
+        'precision': 16,         # Use 16-bit precision
+    }
+}
+
 def load_results(results_dir):
     """Load existing results from the results directory."""
     results_file = os.path.join(results_dir, 'generalization_results.json')
@@ -109,6 +124,10 @@ def train_model(orthography, max_digits, seed, output_dir, params=None, delete_c
     experiment_params['min_digits_test'] = max_digits  # Initially test on same length
     experiment_params['seed'] = seed
     experiment_params['output_dir'] = os.path.join(output_dir, f"{orthography}_trained_on_{max_digits}_digits_seed{seed}")
+    
+    # Apply orthography-specific parameter overrides
+    orthography_params = ORTHOGRAPHY_PARAMS.get(orthography, {})
+    experiment_params.update(orthography_params)
     
     # Check if this experiment has already been run
     results_file = os.path.join(experiment_params['output_dir'], 'results.json')
@@ -179,6 +198,10 @@ def test_model_on_digit_length(model_dir, orthography, test_digits, seed, balanc
     test_params['seed'] = seed
     test_params['output_dir'] = test_output_dir
     test_params['balance_test'] = balance_test
+    
+    # Apply orthography-specific parameter overrides
+    orthography_params = ORTHOGRAPHY_PARAMS.get(orthography, {})
+    test_params.update(orthography_params)
     
     # Find the best checkpoint in the model directory
     checkpoints = [f for f in os.listdir(model_dir) if f.endswith('.ckpt')]
@@ -262,46 +285,72 @@ def run_generalization_experiment(output_dir, orthographies=None, digit_lengths=
             seed_key = str(seed)
             
             # Train model on the maximum digit length
-            model_dir, train_accuracy = train_model(
-                orthography=orthography,
-                max_digits=train_digits,
-                seed=seed,
-                output_dir=output_dir,
-                params=params,
-                delete_checkpoints=delete_checkpoints
-            )
-            
-            if model_dir is None:
-                print(f"Failed to train model for {orthography} with seed {seed}")
-                continue
-            
-            # Update training results
-            results[orthography][seed_key]['train_accuracy'] = train_accuracy
-            
-            # Test on all digit lengths
-            for test_digits in digit_lengths:
-                digit_key = str(test_digits)
-                
-                # Skip if already tested
-                if digit_key in results[orthography][seed_key]['test_results']:
-                    print(f"Already tested {orthography} on {test_digits} digits with seed {seed}")
-                    continue
-                
-                # Test the model on this digit length
-                test_accuracy = test_model_on_digit_length(
-                    model_dir=model_dir,
+            try:
+                model_dir, train_accuracy = train_model(
                     orthography=orthography,
-                    test_digits=test_digits,
+                    max_digits=train_digits,
                     seed=seed,
-                    balance_test=balance_test,
-                    params=params
+                    output_dir=output_dir,
+                    params=params,
+                    delete_checkpoints=delete_checkpoints
                 )
                 
-                # Save the result
-                results[orthography][seed_key]['test_results'][digit_key] = test_accuracy
+                if model_dir is None:
+                    print(f"Failed to train model for {orthography} with seed {seed}")
+                    continue
                 
-                # Save results after each test to avoid losing progress
+                # Update training results
+                results[orthography][seed_key]['train_accuracy'] = train_accuracy
+                
+                # Save intermediate results
                 save_results(results, output_dir)
+                
+                # Test on all digit lengths
+                for test_digits in digit_lengths:
+                    # Skip if already tested
+                    if str(test_digits) in results[orthography][seed_key]['test_results']:
+                        print(f"Already tested {orthography} on {test_digits} digits with seed {seed}")
+                        continue
+                    
+                    try:
+                        test_accuracy = test_model_on_digit_length(
+                            model_dir=model_dir,
+                            orthography=orthography,
+                            test_digits=test_digits,
+                            seed=seed,
+                            balance_test=balance_test,
+                            params=params
+                        )
+                        
+                        # Update test results
+                        results[orthography][seed_key]['test_results'][str(test_digits)] = test_accuracy
+                        
+                        # Save after each test to enable resuming
+                        save_results(results, output_dir)
+                        
+                    except Exception as e:
+                        print(f"Error testing model on {test_digits} digits: {e}")
+                        import traceback
+                        traceback.print_exc()
+                        # Clean up GPU memory even if there's an error
+                        if torch.cuda.is_available():
+                            torch.cuda.empty_cache()
+                        gc.collect()
+                        
+                        # Try to continue with next digit length
+                        continue
+            
+            except Exception as e:
+                print(f"Error in experiment for {orthography} with seed {seed}: {e}")
+                import traceback
+                traceback.print_exc()
+                # Clean up GPU memory even if there's an error
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                gc.collect()
+                
+                # Try to continue with next seed
+                continue
     
     # Calculate statistics and format final results
     final_results = {}
