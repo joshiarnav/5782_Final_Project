@@ -41,8 +41,8 @@ DEFAULT_PARAMS = {
     'min_digits_train': 2,
     'min_digits_test': 30,            # Will be overridden
     'base_number': 10,
-    'train_batch_size': 64,           # Reduced from 128 to save memory
-    'val_batch_size': 128,             # Reduced from 256 to save memory
+    'train_batch_size': 128,           # Reduced from 128 to save memory
+    'val_batch_size': 256,             # Reduced from 256 to save memory
     'max_seq_length': 512,
     'num_workers': 4,
     'max_epochs': 25,
