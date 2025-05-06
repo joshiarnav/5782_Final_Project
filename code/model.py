@@ -218,18 +218,21 @@ class ArithmeticTransformer(pl.LightningModule):
         input_ids, attention_mask, _ = self.prepare_batch(
             questions=questions, answers=correct_answers)
         
-        # Use max_seq_length from config for consistency with training
-        max_length = self.config.max_seq_length
+        # Calculate appropriate max_length based on the longest correct answer
+        # This ensures we generate enough tokens for the full answer
+        max_answer_length = max([len(self.tokenizer.encode(answer)) for answer in correct_answers])
+        # Add a buffer to ensure we have enough space
+        max_length = max(max_answer_length + 10, 128)
         
         # Generate predictions
         batch_outputs = self.model.generate(
             input_ids=input_ids,
             attention_mask=attention_mask,
             do_sample=False,
-            max_length=max_length  # Use max_seq_length from config
-            # num_beams=1,                # Use greedy decoding for validation
-            # early_stopping=True,        # Stop when a complete sequence is generated
-            # use_cache=True,             # Use KV cache for faster generation
+            max_length=max_length,  # Dynamic max_length based on answer length
+            num_beams=1,                # Use greedy decoding for validation
+            early_stopping=True,        # Stop when a complete sequence is generated
+            use_cache=True,             # Use KV cache for faster generation
             # return_dict_in_generate=False,  # Return tensor for efficiency
             # output_scores=False         # Don't compute scores for validation
         )
@@ -255,7 +258,7 @@ class ArithmeticTransformer(pl.LightningModule):
                 self.log_to_file(f"Sample correct answer: {correct_answers[0]}")
                 self.log_to_file(f"Sample predicted answer: {predicted_answers[0]}")
                 self.log_to_file(f"Exact match: {exact_matches[0]}")
-                self.log_to_file(f"Max generation length: {max_length}")
+                self.log_to_file(f"Max answer length: {max_answer_length}, Max generation length: {max_length}")
             except Exception as e:
                 print(f"Warning: Error logging validation sample: {e}")
         
