@@ -68,6 +68,7 @@ def evaluate_model(args):
     import pytorch_lightning as pl
     import gc
     from argparse import Namespace
+    from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
     
     # Set random seeds for reproducibility
     if args.seed is not None:
@@ -125,8 +126,12 @@ def evaluate_model(args):
         # Reinitialize tokenizer if needed
         if not hasattr(model, 'tokenizer') or model.tokenizer is None:
             print("Reinitializing tokenizer...")
-            from transformers import AutoTokenizer
             model.tokenizer = AutoTokenizer.from_pretrained(model.config.model_name_or_path)
+            
+        # Reinitialize model if needed
+        if not hasattr(model, 'model') or model.model is None:
+            print("Reinitializing model...")
+            model.model = AutoModelForSeq2SeqLM.from_pretrained(model.config.model_name_or_path)
             
     except Exception as e:
         print(f"Error loading model: {e}")

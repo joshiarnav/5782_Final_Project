@@ -28,12 +28,26 @@ DIGIT_LENGTHS = [2, 5, 10, 15, 20, 25, 30]
 # Default parameters for testing
 DEFAULT_PARAMS = {
     'operation': 'addition',
+    'model_name_or_path': 't5-base',
+    'train_size': 10,                 # Small train set since we're not training
+    'val_size': 10,                   # Small val set since we're not validating
     'test_size': 1000,                # Test set size
     'base_number': 10,
+    'train_batch_size': 64,           # Required for dataloader creation
     'val_batch_size': 64,             # Batch size for testing
     'max_seq_length': 512,
     'num_workers': 4,
+    'max_epochs': 25,                 # Required for compatibility
+    'check_val_every_n_epoch': 10,    # Required for compatibility
     'precision': 32,
+    'gradient_clip_val': 1.0,         # Required for compatibility
+    'accumulate_grad_batches': 4,     # Required for compatibility
+    'optimizer': 'AdamW',             # Required for compatibility
+    'lr': 0.0004,                     # Required for compatibility
+    'weight_decay': 5e-05,            # Required for compatibility
+    'scheduler': 'StepLR',            # Required for compatibility
+    'gamma': 1.0,                     # Required for compatibility
+    'step_size': 1000,                # Required for compatibility
     'balance_test': True,             # Will be configurable via command line
     'balance_train': True,            # Required for dataset creation
     'balance_val': True,              # Required for dataset creation
@@ -86,7 +100,7 @@ def find_trained_models(base_dir):
     
     return models
 
-def test_model_on_digit_length(model_info, test_digits, balance_test, balance_train, balance_val, params=None):
+def test_model_on_digit_length(model_info, test_digits, balance_test, params=None):
     """Test a trained model on a specific digit length."""
     if params is None:
         params = DEFAULT_PARAMS.copy()
@@ -122,13 +136,7 @@ def test_model_on_digit_length(model_info, test_digits, balance_test, balance_tr
     test_params['seed'] = seed
     test_params['output_dir'] = test_output_dir
     test_params['balance_test'] = balance_test
-    test_params['balance_train'] = balance_train  # Required for dataset creation
-    test_params['balance_val'] = balance_val    # Required for dataset creation
     test_params['checkpoint_path'] = checkpoint_path
-    test_params['model_name_or_path'] = 't5-base'  # Add this to ensure it's available
-    test_params['train_size'] = 10  # Small train set since we're not training
-    test_params['val_size'] = 10    # Small val set since we're not validating
-    test_params['test_size'] = 1000 # Standard test size
     
     # Convert to Namespace object
     args = Namespace(**test_params)
@@ -294,8 +302,6 @@ def evaluate_generalization(base_dir, digit_lengths=None, balance_test=True, ort
                         model_info=model,
                         test_digits=test_digits,
                         balance_test=balance_test,
-                        balance_train=True,
-                        balance_val=True,
                         params=DEFAULT_PARAMS
                     )
                     accuracies.append(accuracy)
