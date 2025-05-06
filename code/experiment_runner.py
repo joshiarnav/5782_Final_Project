@@ -58,7 +58,7 @@ DEFAULT_PARAMS = {
     'val_batch_size': 512,
     'max_seq_length': 512,
     'num_workers': 4,                 # Increased from 4
-    'max_epochs': 50,                # 100 epochs as in the paper
+    'max_epochs': 15,                # 100 epochs as in the paper
     'check_val_every_n_epoch': 10,
     'precision': 32,
     'gradient_clip_val': 1.0,
@@ -71,7 +71,7 @@ DEFAULT_PARAMS = {
     'step_size': 1000,
     'balance_train': True,            # Balanced sampling as in the paper
     'balance_val': True,
-    'balance_test': False,
+    'balance_test': True,
     'invert_question': False,
     'invert_answer': False,
 }
