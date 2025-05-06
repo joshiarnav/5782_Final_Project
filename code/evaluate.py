@@ -11,6 +11,7 @@ import torch
 from transformers import AutoTokenizer
 
 from model import ArithmeticTransformer
+from dataset import ArithmeticDataset
 from number_utils import (
     convert_to_base,
     convert_to_character,
@@ -78,8 +79,28 @@ def evaluate_model(args):
         pl.seed_everything(args.seed)
     
     # Create test dataset with the specified digit length
+    print(f"Creating test dataset with digits {args.min_digits_test} to {args.max_digits_test}")
     _, _, dataset_test = create_datasets(args)
-    _, _, test_dataloader = create_dataloaders(args, None, None, dataset_test)
+    
+    if dataset_test is None or len(dataset_test) == 0:
+        print(f"Error: Failed to create test dataset. Check digit length parameters.")
+        return {'test_exact_match': 0.0}
+    
+    # Create a dummy train and val dataset with minimal examples to avoid None errors
+    dummy_dataset = ArithmeticDataset(
+        n_examples=1,
+        min_digits=args.min_digits_test,
+        max_digits=args.max_digits_test,
+        operation=args.operation,
+        orthography=args.orthography,
+        base_number=args.base_number,
+        invert_question=args.invert_question,
+        invert_answer=args.invert_answer,
+        balanced=args.balance_test
+    )
+    
+    # Create dataloaders with dummy datasets for train and val
+    _, _, test_dataloader = create_dataloaders(args, dummy_dataset, dummy_dataset, dataset_test)
     
     # Load the model from checkpoint
     model = ArithmeticTransformer.load_from_checkpoint(
@@ -104,6 +125,8 @@ def evaluate_model(args):
     del trainer
     del test_dataloader
     del dataset_test
+    if 'dummy_dataset' in locals():
+        del dummy_dataset
     gc.collect()
     if torch.cuda.is_available():
         torch.cuda.empty_cache()

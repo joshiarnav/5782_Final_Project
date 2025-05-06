@@ -39,10 +39,10 @@ DEFAULT_PARAMS = {
     'val_size': 1000,                 # 1,000 examples for checkpoint selection
     'test_size': 1000,                # Test set size
     'min_digits_train': 2,
-    'min_digits_test': 2,            # Will be overridden for each test
+    'min_digits_test': 30,            # Will be overridden
     'base_number': 10,
-    'train_batch_size': 32,           # Reduced from 64 to save memory
-    'val_batch_size': 64,             # Reduced from 128 to save memory
+    'train_batch_size': 64,           # Reduced from 128 to save memory
+    'val_batch_size': 128,             # Reduced from 256 to save memory
     'max_seq_length': 512,
     'num_workers': 4,
     'max_epochs': 25,
@@ -193,11 +193,14 @@ def test_model_on_digit_length(model_dir, orthography, test_digits, seed, balanc
     test_params['orthography'] = orthography
     test_params['max_digits_test'] = test_digits
     test_params['min_digits_test'] = test_digits
-    test_params['max_digits_train'] = test_digits  
-    test_params['min_digits_train'] = 2           
+    test_params['max_digits_train'] = test_digits  # Needed for dataset creation
+    test_params['min_digits_train'] = test_digits  # Needed for dataset creation
     test_params['seed'] = seed
     test_params['output_dir'] = test_output_dir
     test_params['balance_test'] = balance_test
+    test_params['train_size'] = 10  # Small train set since we're not training
+    test_params['val_size'] = 10    # Small val set since we're not validating
+    test_params['test_size'] = 1000 # Standard test size
     
     # Apply orthography-specific parameter overrides
     orthography_params = ORTHOGRAPHY_PARAMS.get(orthography, {})
@@ -220,6 +223,7 @@ def test_model_on_digit_length(model_dir, orthography, test_digits, seed, balanc
     args = Namespace(**test_params)
     
     print(f"Testing model on {test_digits} digits (balanced={balance_test})")
+    print(f"Using checkpoint: {best_checkpoint}")
     
     try:
         # Import and use evaluate function
