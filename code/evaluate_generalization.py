@@ -48,7 +48,7 @@ DEFAULT_PARAMS = {
     'scheduler': 'StepLR',            # Required for compatibility
     'gamma': 1.0,                     # Required for compatibility
     'step_size': 1000,                # Required for compatibility
-    'balance_test': True,             # Will be configurable via command line
+    'balance_test': False,            # Default: False (matches command-line default)
     'balance_train': True,            # Required for dataset creation
     'balance_val': True,              # Required for dataset creation
     'invert_question': False,
