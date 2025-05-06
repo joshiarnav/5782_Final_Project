@@ -222,6 +222,24 @@ def run_experiment(args=None):
     # Save results
     output = save_results(args, results)
     
+    # Clean up memory
+    del trainer
+    del model
+    del train_dataloader
+    del val_dataloader
+    del test_dataloader
+    del dataset_train
+    del dataset_val
+    del dataset_test
+    
+    # Force garbage collection
+    import gc
+    gc.collect()
+    
+    # Clear CUDA cache if available
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    
     print("Done!")
     return output
 

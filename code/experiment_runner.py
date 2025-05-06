@@ -15,6 +15,7 @@ import torch
 from datetime import datetime
 from scipy import stats
 from argparse import Namespace
+import gc
 
 # Import the train module
 import sys
@@ -128,9 +129,18 @@ def run_single_experiment(orthography, max_digits, seed, output_dir, params=None
                         print(f"Deleting checkpoint: {ckpt_path}")
                         os.remove(ckpt_path)
         
+        # Clean up GPU memory
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        gc.collect()
+        
         return test_accuracy
     except Exception as e:
         print(f"Error running experiment: {e}")
+        # Clean up GPU memory even if there's an error
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        gc.collect()
         return 0.0
 
 def calculate_statistics(accuracies):
