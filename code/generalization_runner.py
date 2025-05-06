@@ -41,8 +41,8 @@ DEFAULT_PARAMS = {
     'min_digits_train': 2,
     'min_digits_test': 2,            # Will be overridden for each test
     'base_number': 10,
-    'train_batch_size': 64,           # Reduced from 128 to save memory
-    'val_batch_size': 128,            # Reduced from 512 to save memory
+    'train_batch_size': 32,           # Reduced from 64 to save memory
+    'val_batch_size': 64,             # Reduced from 128 to save memory
     'max_seq_length': 512,
     'num_workers': 4,
     'max_epochs': 25,
@@ -110,6 +110,18 @@ def train_model(orthography, max_digits, seed, output_dir, params=None, delete_c
     experiment_params['seed'] = seed
     experiment_params['output_dir'] = os.path.join(output_dir, f"{orthography}_trained_on_{max_digits}_digits_seed{seed}")
     
+    # Check if this experiment has already been run
+    results_file = os.path.join(experiment_params['output_dir'], 'results.json')
+    if os.path.exists(results_file):
+        print(f"Experiment already completed for {orthography}, {max_digits} digits, seed {seed}. Skipping training.")
+        try:
+            with open(results_file, 'r') as f:
+                result = json.load(f)
+            test_accuracy = result.get('test_exact_match', 0.0)
+            return experiment_params['output_dir'], test_accuracy
+        except Exception as e:
+            print(f"Error loading existing results: {e}. Will retrain.")
+    
     # Convert to Namespace object for compatibility with train.py
     args = Namespace(**experiment_params)
     
@@ -145,11 +157,25 @@ def test_model_on_digit_length(model_dir, orthography, test_digits, seed, balanc
     test_output_dir = os.path.join(model_dir, f"test_on_{test_digits}_digits")
     os.makedirs(test_output_dir, exist_ok=True)
     
+    # Check if this test has already been run
+    results_file = os.path.join(test_output_dir, 'results.json')
+    if os.path.exists(results_file):
+        print(f"Test already completed for {orthography} on {test_digits} digits. Skipping test.")
+        try:
+            with open(results_file, 'r') as f:
+                result = json.load(f)
+            test_accuracy = result.get('test_exact_match', 0.0)
+            return test_accuracy
+        except Exception as e:
+            print(f"Error loading existing test results: {e}. Will retest.")
+    
     # Update parameters for testing
     test_params = params.copy()
     test_params['orthography'] = orthography
     test_params['max_digits_test'] = test_digits
     test_params['min_digits_test'] = test_digits
+    test_params['max_digits_train'] = test_digits  
+    test_params['min_digits_train'] = 2           
     test_params['seed'] = seed
     test_params['output_dir'] = test_output_dir
     test_params['balance_test'] = balance_test
@@ -161,7 +187,7 @@ def test_model_on_digit_length(model_dir, orthography, test_digits, seed, balanc
         return 0.0
     
     # Sort by validation score (assuming format: epoch=X-val_exact_match=Y.ckpt)
-    checkpoints.sort(key=lambda x: float(x.split('val_exact_match=')[1].split('.ckpt')[0]), reverse=True)
+    checkpoints.sort(key=lambda x: float(x.split('val_exact_match=')[1].split('.ckpt')[0]) if 'val_exact_match=' in x else 0, reverse=True)
     best_checkpoint = os.path.join(model_dir, checkpoints[0])
     
     # Set the checkpoint path for loading
@@ -173,7 +199,7 @@ def test_model_on_digit_length(model_dir, orthography, test_digits, seed, balanc
     print(f"Testing model on {test_digits} digits (balanced={balance_test})")
     
     try:
-        # Import and use evaluate function (we'll need to create this)
+        # Import and use evaluate function
         from evaluate import evaluate_model
         result = evaluate_model(args)
         test_accuracy = result.get('test_exact_match', 0.0)
@@ -186,6 +212,9 @@ def test_model_on_digit_length(model_dir, orthography, test_digits, seed, balanc
         return test_accuracy
     except Exception as e:
         print(f"Error testing model: {e}")
+        # Print traceback for debugging
+        import traceback
+        traceback.print_exc()
         # Clean up GPU memory even if there's an error
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
@@ -403,6 +432,10 @@ def main():
                         help='Training batch size (overrides default in DEFAULT_PARAMS)')
     parser.add_argument('--precision', type=int, choices=[16, 32], default=None,
                         help='Training precision (16 or 32, overrides default in DEFAULT_PARAMS)')
+    parser.add_argument('--gradient_accumulation', type=int, default=None,
+                        help='Gradient accumulation steps (overrides default in DEFAULT_PARAMS)')
+    parser.add_argument('--dataset_size', type=int, default=None,
+                        help='Training dataset size (overrides default in DEFAULT_PARAMS)')
     
     args = parser.parse_args()
     
@@ -418,6 +451,10 @@ def main():
         params['train_batch_size'] = args.batch_size
     if args.precision is not None:
         params['precision'] = args.precision
+    if args.gradient_accumulation is not None:
+        params['accumulate_grad_batches'] = args.gradient_accumulation
+    if args.dataset_size is not None:
+        params['train_size'] = args.dataset_size
     
     if args.plot_only:
         # Only plot existing results
