@@ -67,7 +67,47 @@ python train.py
 
 This training should take approximately 10 hours on a V100 GPU.
 
-## Evaluating a Model
+## Running Experiments
+
+To reproduce the experiments from the paper, use the `experiment_runner.py` script which tests different number representations across various digit lengths:
+
+```
+python experiment_runner.py 
+    --output_dir=./experiment_results 
+    --orthographies 10ebased 10based words underscore character_fixed character decimal
+    --digit_lengths 2 5 10 15 20 25 30
+    --train_size=10000
+    --max_epochs=25
+    --seed=42
+```
+
+For faster experimentation, you can run a subset of orthographies and digit lengths:
+
+```
+python experiment_runner.py 
+    --output_dir=./experiment_results_test 
+    --orthographies 10ebased decimal 
+    --digit_lengths 2 5 
+    --train_size=1000 
+    --max_epochs=2
+```
+
+## Testing Generalization
+
+To test how well models trained on one digit length generalize to other digit lengths, use the `generalization_runner.py` script:
+
+```
+python generalization_runner.py 
+    --output_dir=./generalized_results 
+    --train_digits=30 
+    --orthographies 10ebased 10based
+    --digit_lengths 2 5 10 15 20 25 30
+    --balance_test
+```
+
+This trains models on the specified digit length (default: 30) and tests them on all digit lengths in the list.
+
+## Evaluating Trained Models
 
 To evaluate a trained model on custom examples:
 
@@ -80,6 +120,16 @@ python evaluate.py
     --examples "123,456" "7890,1234" "9999,9999"
 ```
 
+To evaluate generalization capabilities of previously trained models:
+
+```
+python evaluate_generalization.py 
+    --base_dir=./generalized_results 
+    --digit_lengths 2 5 10 15 20 25 30
+    --balance_test
+    --orthographies 10ebased 10based
+```
+
 ## Visualizing Results
 
 To visualize the performance of models across different configurations:
@@ -90,6 +140,17 @@ python visualize.py
     --output_dir=./plots 
     --plot_type=all
 ```
+
+## Experiment Implementation
+
+The file `experiment_implementation.ipynb` is a Jupyter notebook that was used to run all the experiments and generate the results presented in our project. It contains the complete workflow including:
+
+1. Setting up the environment
+2. Running the experiments with `experiment_runner.py`
+3. Testing generalization with `generalization_runner.py`
+4. Visualizing and analyzing the results
+
+This notebook can be run in Google Colab with GPU acceleration for reproducing our experimental results.
 
 ## Number Representations
 
