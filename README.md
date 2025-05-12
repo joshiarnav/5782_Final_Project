@@ -1,109 +1,167 @@
-# Dog Breed Classification using Transfer Learning in AWS Sagemaker
+# Arithmetic Transformer
 
-## INTRODUCTION
------------------------------------------------------------------------------------------------------
-IGNORE THIS README, THIS IS THE SUGGESTED TEMPLATE
+This repository contains a modular implementation of the experiments from the paper:
 
-The ultimate goal of this project is to predict dog breeds from corresponding images of dogs.
+[Nogueira, Jiang, Lin "Investigating the Limitations of Transformers with Simple Arithmetic Tasks", 2021](https://arxiv.org/abs/2102.13019)
 
-While this is a straightforward project requirement, efforts have been made to incorporate elements of hyperparameter tuning and optimization, debugging & profiling, transfer learning, endpoint deployment and inferencing in the solution.
+## Installation
 
-Thus the underlying purpose being to get accustomed with the various Sagemaker features viz. HyperparameterTuner, Estimator, DebuggerHookConfig, ProfilerConfig, Predictor.
+First, install the required packages:
+```
+pip install -r requirements.txt
+```
 
-These points makes this a holistic project to understand the fundamentals of Machine Learning in AWS Sagemaker.
+## Project Structure
 
+The codebase is organized into the following modules:
 
-**Please refer to the contents of this project if you are looking to understand any of the following:**
+- `train.py` - Main script for training and evaluating models
+- `evaluate.py` - Script for evaluating trained models on custom examples
+- `visualize.py` - Script for visualizing model performance across different configurations
+- `model.py` - Implementation of the transformer-based arithmetic model
+- `dataset.py` - Dataset implementation for generating arithmetic problems
+- `number_utils.py` - Utilities for number representation and conversion
+- `config.py` - Configuration and argument parsing
 
-A) How to use Sagemaker Hyperparamter Tuning Jobs to optimize model hyperparameters?
+## Training a Model
 
-B) How to attach Sagemaker debugging and profiling hooks to monitor various performace metrics DURING the model training phase
+The command below trains and evaluates a T5-base model on the task of adding up to 15-digits:
 
-C) Deploy a model to a Sagemaker Endpoint using the model.tar file
+```
+python train.py 
+    --output_dir=./output 
+    --model_name_or_path=t5-base 
+    --operation=addition 
+    --orthography=10ebased 
+    --balance_train 
+    --balance_val 
+    --train_size=100000 
+    --val_size=10000 
+    --test_size=10000 
+    --min_digits_train=2 
+    --max_digits_train=15 
+    --min_digits_test=2 
+    --max_digits_test=15 
+    --base_number=10 
+    --seed=1 
+    --train_batch_size=4 
+    --accumulate_grad_batches=32 
+    --val_batch_size=32 
+    --max_seq_length=512 
+    --num_workers=4 
+    --gpus=1 
+    --optimizer=AdamW 
+    --lr=3e-4 
+    --weight_decay=5e-5 
+    --scheduler=StepLR 
+    --t_0=2 
+    --t_mult=2 
+    --gamma=1.0 
+    --step_size=1000 
+    --max_epochs=20 
+    --check_val_every_n_epoch=2 
+    --amp_level=O0 
+    --precision=32 
+    --gradient_clip_val=1.0
+```
 
-D) Query a deployed endpoint to derive inferences on your trained model
+This training should take approximately 10 hours on a V100 GPU.
 
+## Running Experiments
 
+To reproduce the experiments from the paper, use the `experiment_runner.py` script which tests different number representations across various digit lengths:
 
-## PROJECT SETUP INSTRUCTIONS
------------------------------------------------------------------------------------------------------
+```
+python experiment_runner.py 
+    --output_dir=./experiment_results 
+    --orthographies 10ebased 10based words underscore character_fixed character decimal
+    --digit_lengths 2 5 10 15 20 25 30
+    --train_size=10000
+    --max_epochs=25
+    --seed=42
+```
 
-1) Clone this repository in AWS Sagemaker (both Studio and Notebook instances work)
+For faster experimentation, you can run a subset of orthographies and digit lengths:
 
-2) Notebook is divided into sections for each topic
+```
+python experiment_runner.py 
+    --output_dir=./experiment_results_test 
+    --orthographies 10ebased decimal 
+    --digit_lengths 2 5 
+    --train_size=1000 
+    --max_epochs=2
+```
 
-3) Complete each section by running the cells
+## Testing Generalization
 
+To test how well models trained on one digit length generalize to other digit lengths, use the `generalization_runner.py` script:
 
-**NOTE:** Change the number of instances and instance types configured in the hyperparameter tuning jobs as per AWS budget.
+```
+python generalization_runner.py 
+    --output_dir=./generalized_results 
+    --train_digits=30 
+    --orthographies 10ebased 10based
+    --digit_lengths 2 5 10 15 20 25 30
+    --balance_test
+```
 
+This trains models on the specified digit length (default: 30) and tests them on all digit lengths in the list.
 
-![tuning_config](images/Tuning%20config.png)
+## Evaluating Trained Models
 
+To evaluate a trained model on custom examples:
 
+```
+python evaluate.py 
+    --checkpoint_dir=./output 
+    --operation=addition 
+    --orthography=10ebased 
+    --max_digits=15 
+    --examples "123,456" "7890,1234" "9999,9999"
+```
 
-## FILE INFO
------------------------------------------------------------------------------------------------------
+To evaluate generalization capabilities of previously trained models:
 
-Explanations of the different files used in the project
+```
+python evaluate_generalization.py 
+    --base_dir=./generalized_results 
+    --digit_lengths 2 5 10 15 20 25 30
+    --balance_test
+    --orthographies 10ebased 10based
+```
 
-train_and_deploy.pynb  --> python notebook with main code
+## Visualizing Results
 
-hpo.py --> entry point script used by the hyperparameter tuning jobs
+To visualize the performance of models across different configurations:
 
-train_model.py --> entry point script used by the final training job
+```
+python visualize.py 
+    --results_dir=./experiments 
+    --output_dir=./plots 
+    --plot_type=all
+```
 
-code/pretrained_model.py --> entry script used when querying the deployed endpoint for predictions
+## Experiment Implementation
 
-code/requirements.txt --> dependencies to install when initializing the instance on 
+The file `experiment_implementation.ipynb` is a Jupyter notebook that was used to run all the experiments and generate the results presented in our project. It contains the complete workflow including:
 
-    
-## QUERYING AN ENDPOINT SAMPLE
------------------------------------------------------------------------------------------------------
+1. Setting up the environment
+2. Running the experiments with `experiment_runner.py`
+3. Testing generalization with `generalization_runner.py`
+4. Visualizing and analyzing the results
 
-Deployed endpoint in service
+This notebook can be run in Google Colab with GPU acceleration for reproducing our experimental results.
 
-![endpoint](images/Endpoint.png)
+## Number Representations
 
-Code sample for querying a model endpoint
+The paper investigates how different number representations affect model performance:
 
-![model_prediction](images/Predict.png)
+- `decimal`: Standard decimal representation (e.g., "832")
+- `character`: Space-separated digits (e.g., "8 3 2")
+- `character_fixed`: Fixed-length space-separated digits (e.g., "0 8 3 2")
+- `underscore`: Underscore-separated digits (e.g., "8_3_2")
+- `words`: Word representation (e.g., "eight hundred thirty-two")
+- `10based`: Digits with explicit place values (e.g., "8 100 3 10 2")
+- `10ebased`: Digits with scientific notation place values (e.g., "8 10e2 3 10e1 2 10e0")
 
-
-Test Predictions
-
-![inferences](images/predictions.jpeg)
-
-    
-## INSIGHTS
------------------------------------------------------------------------------------------------------
-Each iteration of the hyperparameter tuning job focused on improving the accuracy(as defined in the optimization of `objective_metric_name`)
-
-![hpo](images/Status%20of%20hyperparameter%20Tuning%20Jobs.png)
-
-The CPU utilization metric as captured by the debugging hook:
-
-![de](images/CPU%20Utilization.png)
-
-
-
-**NOTE:** An effort was made previously to accomplish the classification task using a `resnet18` model. However, both the training and testing inferences by this model were inaccurate. This indicated that the underlying model is not able to handle the complexity of the classification problem.
-
-
-
-## REFERENCES
------------------------------------------------------------------------------------------------------
-
-https://sagemaker-examples.readthedocs.io/en/latest/frameworks/pytorch/get_started_mnist_deploy.html
-
-https://sagemaker.readthedocs.io/en/stable/frameworks/pytorch/using_pytorch.html#model-directory-structure
-
-https://datascience.stackexchange.com/questions/63070/attributeerror-numpy-ndarray-object-has-no-attribute-img-to-array
-
-https://machinelearningmastery.com/learning-curves-for-diagnosing-machine-learning-model-performance/
-
-
-## ACKNOWLEDGEMENTS
------------------------------------------------------------------------------------------------------
-
-Credits to Udacity for the [DogImages Dataset](https://s3-us-west-1.amazonaws.com/udacity-aind/dog-project/dogImages.zip) and the guidelines to complete this project as part of the AWS ML Engineer Nanodegree Program
+The results show that explicit position tokens (as in `10ebased`) enable the model to learn addition of numbers up to 60 digits with high accuracy.
