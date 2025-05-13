@@ -1,6 +1,14 @@
 # Introduction
 In this project, we reproduce the paper Investigating the Limitations of Transformers with Simple Arithmetic Tasks by Rodrigo Nogueira, Zhiying Jiang, and Jimmy Lin. The work addresses the inability of standard pretrained transformer models to perform basic arithmetic such as addition. Motivated by the human capacity for abstraction and seeking to see if existing transformer models could attain the same ability, the authors of the original paper inject explicit digit‐position representations into the model’s input. The authors fine-tune T5 models of various sizes on generated addition and subtraction datasets using six distinct input representations and show that positional markers enable near-perfect accuracy on numbers up to 60 digits. 
 
+# Chosen Result
+Results
+We aimed to reproduce Figure 1 from the original paper, which presents the test accuracies of various number format types on adding two numbers with between 2 to 30 digits. This result is significant because it highlights how the input representations affect the performance of transformers. 
+<img width="347" alt="Screenshot 2025-05-12 at 10 07 41 PM" src="https://github.com/user-attachments/assets/22b8d340-0376-4cca-a900-4f72cf2baa6b" />
+
+As shown above, the input representation of the arithmetic can greatly boost the performance of the transformer, achieving near perfect accuracies in some scenarios. We chose to reproduce this due to its central role in demonstrating the paper’s key claim: that transformers, when fine-tuned, can learn arithmetic operations to varying degrees depending on the input format. 
+
+
 
 # Arithmetic Transformer
 
