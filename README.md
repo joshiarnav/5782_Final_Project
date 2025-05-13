@@ -8,24 +8,8 @@ We aimed to reproduce Figure 1 from the original paper, which presents the test 
 
 As shown above, the input representation of the arithmetic can greatly boost the performance of the transformer, achieving near perfect accuracies in some scenarios. We chose to reproduce this due to its central role in demonstrating the paper’s key claim: that transformers, when fine-tuned, can learn arithmetic operations to varying degrees depending on the input format. 
 
-
-
-# Arithmetic Transformer
-
-This repository contains a modular implementation of the experiments from the paper:
-
-[Nogueira, Jiang, Lin "Investigating the Limitations of Transformers with Simple Arithmetic Tasks", 2021](https://arxiv.org/abs/2102.13019)
-
-## Installation
-
-First, install the required packages:
-```
-pip install -r requirements.txt
-```
-
-## Project Structure
-
-The codebase is organized into the following modules:
+# GitHub Contents
+In the code folder, the codebase is organized into the following modules:
 
 - `train.py` - Main script for training and evaluating models
 - `evaluate.py` - Script for evaluating trained models on custom examples
@@ -34,6 +18,25 @@ The codebase is organized into the following modules:
 - `dataset.py` - Dataset implementation for generating arithmetic problems
 - `number_utils.py` - Utilities for number representation and conversion
 - `config.py` - Configuration and argument parsing
+
+
+# Re-implementation Details
+We generated our dataset through a process called balanced sampling. Given a maximum number of digits D (D = 30 in our implementation), sample a number d from [2, D] and further sample a number between [10d-1, 10d-1 - 1]. Repeat this twice to get two numbers to add, and substitute them into the format “What is [number1] plus [number2]?”. Using this sampling method and question format, a dataset of 10000 was created along with a validation set of 1000. Each dataset was then formatted to one of the 7 different input format types
+<img width="347" alt="Screenshot 2025-05-12 at 10 20 24 PM" src="https://github.com/user-attachments/assets/52adf68c-712e-4ae3-bcca-367578154ac7" />
+The 7 input formats are shown above in Table 1 (taken from the paper). They vary from no change to the number (decimal) to more tokenized versions and those with digit positions. 
+
+Each formatted dataset was used to finetune, validate, and test a T5-base (220M parameter) transformer model. Finetuning was done with an AdamW optimizer with a learning rate of 3e-4 to 4e-4, weight decay of 5e-5, and gradient clipping at 1.0. Batch size was 64 over 25 epochs. The model was validated every two epochs and the best accuracy checkpoint was used. 
+
+Compared to the original paper, we made some minor changes to speed training and reduce memory usage. Batch size was reduced from 128, but gradient accumulation steps was set to 4 to simulate larger batches. Additionally, more training data was used at the expense of less epochs, but the paper mentioned that they performed similar experiments and found that this configuration didn’t affect overall performance much.  
+
+# Reproduction Steps
+
+## Installation
+
+First, install the required packages:
+```
+pip install -r requirements.txt
+```
 
 ## Training a Model
 
@@ -177,3 +180,19 @@ The paper investigates how different number representations affect model perform
 - `10ebased`: Digits with scientific notation place values (e.g., "8 10e2 3 10e1 2 10e0")
 
 The results show that explicit position tokens (as in `10ebased`) enable the model to learn addition of numbers up to 60 digits with high accuracy.
+
+
+# Results/Insights
+<img width="291" alt="Screenshot 2025-05-12 at 10 24 09 PM" src="https://github.com/user-attachments/assets/8c70ff99-9599-4ccd-9e21-277bcf80a35c" />
+Our results (shown above) align with the paper’s: that 10e-based and 10-based formatting are the most effective with basic arithmetic tasks in transformers. Other formats did well with 2 digit numbers, but their performance plummeted with larger numbers, just like those in the paper. 
+
+While the reproduced accuracies are slightly lower, they still achieved decent accuracies around 80% and reflected the advantages of each format. We believe that most of the discrepancies come from using smaller batch sizes (due to memory constraints) and minor changes to the AdamW. Regardless, our results reflect the paper and show that input formatting can be a key element of using transformers on arithmetic, as they can drastically change performance. 
+
+# Conclusion
+Transformers learn most accurately when introducing position tokens (e.g. “3 10e1 2”) with 10e based words having the highest test accuracy. This result is exhibited even with varying amounts of data, epochs, and batch sizes, highlighting the robustness of this technique. 
+
+# References
+Nogueira, R., Jiang, Z., & Lin, J. (2021). Investigating the limitations of transformers with simple arithmetic tasks. arXiv preprint arXiv:2102.13019.
+
+Raffel, C., Shazeer, N., Roberts, A., Lee, K., Narang, S., Matena, M., ... & Liu, P. J. (2020). Exploring the limits of transfer learning with a unified text-to-text transformer. Journal of machine learning research, 21(140), 1-67.
+
